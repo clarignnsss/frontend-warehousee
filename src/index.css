@@ -2,9 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+.p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  background: #2c4856;
+  border-color: #eef2ff;
+  color: #fff;
+}
 body {
   margin: 0;
-
+  /* font-family: var(--font-family); */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;

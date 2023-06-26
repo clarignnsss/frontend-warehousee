@@ -1,26 +1,26 @@
 import React, { useState, useContext } from "react";
 import { Alert } from "flowbite-react";
-import { CityContext } from "../context/CityContext.js";
+import { AttributeContext } from "../context/AttributeContext";
 
-const City = () => {
-  const [cityValue, setCityValue] = useState("");
-  const { city, setCity } = useContext(CityContext);
+const Attribute = () => {
+  const [attrName, setAttr] = useState("");
+  const { attribute, setAttribute } = useContext(AttributeContext);
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState("");
   const [alertMsg, setAlertMsg] = useState("");
 
-  const handleSubmit = async (evt) => {
+  const handleSubmit = (evt) => {
     evt.preventDefault();
-    const newCity = {
-      cityName: cityValue,
+    const newAttr = {
+      attrName,
     };
-    const response = fetch("http://localhost:4000/api/city", {
+    const response = fetch("http://localhost:4000/api/attribute", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ...newCity,
+        ...newAttr,
       }),
     });
     response
@@ -31,18 +31,25 @@ const City = () => {
         return res.json();
       })
       .then((result) => {
-        console.log(result);
+        const id = result["insertId"];
+        fetch(`http://localhost:4000/api/attribute/${id}`)
+          .then((res) => {
+            return res.json();
+          })
+          .then((result) => {
+            console.log(result);
+            setAttribute([...attribute, ...result]);
+          });
         setAlert(true);
         if (result.protocol41) {
           setAlertColor("success");
-          setAlertMsg("City data successfully submitted !");
-          setCity([...city, newCity]);
+          setAlertMsg("Attribute data successfully submitted !");
         } else {
           setAlertColor("failure");
           setAlertMsg(result);
         }
 
-        setCityValue("");
+        setAttr("");
         setTimeout(() => {
           setAlert(false);
         }, 3000);
@@ -54,7 +61,7 @@ const City = () => {
     <>
       <div className="px-4 md:h-[650px] md:overflow-y-scroll">
         <div className="py-4 text-center text-[#2C4856] font-extrabold text-2xl">
-          City
+          Attribute
         </div>
         {alert ? (
           <Alert color={`${alertColor}`} className="mb-3">
@@ -97,16 +104,16 @@ const City = () => {
                 for="city"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
-                City Name
+                Attribute Name
               </label>
               <input
                 type="text"
                 id="city"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
-                placeholder="Ex: Solo"
+                placeholder="Ex: Bentuk Kemasan"
                 required
-                value={cityValue}
-                onChange={(e) => setCityValue(e.target.value)}
+                value={attrName}
+                onChange={(e) => setAttr(e.target.value)}
               />
             </div>
           </div>
@@ -123,4 +130,4 @@ const City = () => {
   );
 };
 
-export default City;
+export default Attribute;
