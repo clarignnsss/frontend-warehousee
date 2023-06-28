@@ -140,6 +140,9 @@ const ProductAttributePopup = ({ data, setOpen, open }) => {
               setCode(e.code);
               setName(e.label);
             }}
+            defaultValue={options_product.find(
+              (option) => option.idproduct == data.idproduct
+            )}
             required
             className="focus:ring-black focus:border-black"
           ></Select>
@@ -160,6 +163,9 @@ const ProductAttributePopup = ({ data, setOpen, open }) => {
               setIdAttrValue(e.value);
               setAttrValue(e.label);
             }}
+            defaultValue={options_attrvalue.find(
+              (option) => option.value == data.idattrvalue
+            )}
             required
             className="focus:ring-black focus:border-black"
           ></Select>

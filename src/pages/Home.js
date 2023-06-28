@@ -19,6 +19,8 @@ import {
   ProductAttributeContext,
   ProductAttributeContextProvider,
 } from "../context/ProductAttributeContext";
+import { ProductUnitContextProvider } from "../context/ProductUnitContext";
+import { WarehouseContextProvider } from "../context/WarehouseContext";
 
 const Home = () => {
   const { setUserInfo, userInfo } = useContext(UserContext);
@@ -58,28 +60,34 @@ const Home = () => {
           <CountryContextProvider>
             <ProvinceContextProvider>
               <CityContextProvider>
-                <ProductContextProvider>
-                  <ProductAttributeContextProvider>
-                    <UomContextProvider>
-                      <AttributeContextProvider>
-                        <AttrValueContextProvider>
-                          <div className="md:flex relative">
-                            <div className="h-screen w-72 overflow-y-scroll bg-black">
-                              <Sidebar
-                                isOpen={isSidebarOpen}
-                                setIsOpen={handleSidebarToggle}
-                              ></Sidebar>
-                            </div>
-                            <div className="w-full drop-shadow bg-gray-300">
-                              <Menu handleClick={handleSidebarToggle}></Menu>
-                              <Outlet></Outlet>
-                            </div>
-                          </div>
-                        </AttrValueContextProvider>
-                      </AttributeContextProvider>
-                    </UomContextProvider>
-                  </ProductAttributeContextProvider>
-                </ProductContextProvider>
+                <ProductUnitContextProvider>
+                  <ProductContextProvider>
+                    <ProductAttributeContextProvider>
+                      <UomContextProvider>
+                        <AttributeContextProvider>
+                          <AttrValueContextProvider>
+                            <WarehouseContextProvider>
+                              <div className="md:flex relative">
+                                <div className="h-screen w-72 overflow-y-scroll bg-black">
+                                  <Sidebar
+                                    isOpen={isSidebarOpen}
+                                    setIsOpen={handleSidebarToggle}
+                                  ></Sidebar>
+                                </div>
+                                <div className="w-full drop-shadow bg-gray-300">
+                                  <Menu
+                                    handleClick={handleSidebarToggle}
+                                  ></Menu>
+                                  <Outlet></Outlet>
+                                </div>
+                              </div>
+                            </WarehouseContextProvider>
+                          </AttrValueContextProvider>
+                        </AttributeContextProvider>
+                      </UomContextProvider>
+                    </ProductAttributeContextProvider>
+                  </ProductContextProvider>
+                </ProductUnitContextProvider>
               </CityContextProvider>
             </ProvinceContextProvider>
           </CountryContextProvider>

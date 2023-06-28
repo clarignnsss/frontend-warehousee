@@ -55,7 +55,7 @@ const WarehouseList = () => {
       {isMenuOpen ? (
         <ul className="px-10 flex flex-col space-y-2 ">
           <li>
-            <Link className="py-2 hover:text-[#62D64F]" to="company">
+            <Link className="py-2 hover:text-[#62D64F]" to="warehouseview">
               Create
             </Link>
           </li>

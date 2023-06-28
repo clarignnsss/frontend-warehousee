@@ -28,6 +28,10 @@ import ProductView from "./component/ProductView";
 import Product from "./component/Product";
 import ProductAttributeView from "./component/ProductAttributeView";
 import ProductAttribute from "./component/ProductAttribute";
+import ProductUnitView from "./component/ProductUnitView";
+import ProductUnit from "./component/ProductUnit";
+import WarehouseView from "./component/WarehouseView";
+import Warehouse from "./component/Warehouse";
 
 function App() {
   return (
@@ -63,6 +67,10 @@ function App() {
                     element={<ProductAttributeView />}
                   />
                   <Route path="addproductattr" element={<ProductAttribute />} />
+                  <Route path="productunitview" element={<ProductUnitView />} />
+                  <Route path="addproductunit" element={<ProductUnit />} />
+                  <Route path="warehouseview" element={<WarehouseView />} />
+                  <Route path="addwarehouse" element={<Warehouse />} />
                 </Route>
               </Route>
             </Routes>
