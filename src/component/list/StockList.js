@@ -38,7 +38,10 @@ const StockList = () => {
           />
         </svg>
 
-        <Link className="block py-2 px-2 hover:text-[#FFC30D] text-[#9A9A9A]  transition duration-500  rounded-sm">
+        <Link
+          className="block py-2 px-2 hover:text-[#FFC30D] text-[#9A9A9A]  transition duration-500  rounded-sm"
+          to="stockview"
+        >
           Stock
         </Link>
       </p>

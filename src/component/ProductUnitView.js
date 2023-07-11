@@ -76,7 +76,6 @@ const ProductUnitView = () => {
         <Column field="product" header="Product" sortable></Column>
         <Column field="code" header="Code" sortable></Column>
         <Column field="uom" header="UOM" sortable></Column>
-        <Column field="unitQty" header="Qty" sortable></Column>
       </DataTable>
     </div>
   );

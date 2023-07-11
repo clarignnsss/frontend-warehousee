@@ -34,15 +34,6 @@ const ProductAttributePopup = ({ data, setOpen, open }) => {
       }))
     : "";
 
-  const style = {
-    control: (base) => ({
-      ...base,
-      border: 0,
-      // This line disable the blue border
-      boxShadow: "none",
-    }),
-  };
-
   const handleDelete = () => {
     const response = fetch(
       `http://localhost:4000/api/productattr/${data.idproductAttribute}`,
@@ -133,7 +124,6 @@ const ProductAttributePopup = ({ data, setOpen, open }) => {
           <Select
             id="product"
             options={options_product}
-            styles={style}
             classNamePrefix="select2-selection"
             onChange={(e) => {
               setIdProduct(e.value);
@@ -157,7 +147,6 @@ const ProductAttributePopup = ({ data, setOpen, open }) => {
           <Select
             id="attrvalue"
             options={options_attrvalue}
-            styles={style}
             classNamePrefix="select2-selection"
             onChange={(e) => {
               setIdAttrValue(e.value);

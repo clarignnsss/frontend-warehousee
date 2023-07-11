@@ -32,6 +32,11 @@ import ProductUnitView from "./component/ProductUnitView";
 import ProductUnit from "./component/ProductUnit";
 import WarehouseView from "./component/WarehouseView";
 import Warehouse from "./component/Warehouse";
+import Stock from "./component/Stock";
+import StockView from "./component/StockView";
+import AdjustmentView from "./component/AdjustmentView";
+import Adjustment from "./component/Adjustment";
+import DashboardView from "./component/DashboardView";
 
 function App() {
   return (
@@ -43,7 +48,7 @@ function App() {
               <Route path="/">
                 <Route index element={<Login />} />
                 <Route path="home" element={<Home />}>
-                  <Route index element={<h1>Dashboard</h1>} />
+                  <Route index element={<DashboardView />} />
                   <Route path="company" element={<CompanyView />} />
                   <Route path="currency" element={<CurrencyView />} />
                   <Route path="country" element={<CountryView />} />
@@ -71,6 +76,10 @@ function App() {
                   <Route path="addproductunit" element={<ProductUnit />} />
                   <Route path="warehouseview" element={<WarehouseView />} />
                   <Route path="addwarehouse" element={<Warehouse />} />
+                  <Route path="addstock" element={<Stock />} />
+                  <Route path="stockview" element={<StockView />} />
+                  <Route path="adjview" element={<AdjustmentView />} />
+                  <Route path="addadjustment" element={<Adjustment />} />
                 </Route>
               </Route>
             </Routes>

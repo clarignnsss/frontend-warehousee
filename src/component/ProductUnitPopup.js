@@ -11,7 +11,6 @@ const ProductUnitPopup = ({ data, setOpen, setSelected, open }) => {
   const [ProductId, setProductId] = useState(data.idproduct);
   const [ProductName, setProductName] = useState(data.product);
   const [ProductCode, setProductCode] = useState(data.code);
-  const [Qty, setQty] = useState(data.unitQty);
   const { productunit, setProductUnit } = useContext(ProductUnitContext);
   const { product } = useContext(ProductContext);
   const { uom } = useContext(UomContext);
@@ -32,14 +31,6 @@ const ProductUnitPopup = ({ data, setOpen, setSelected, open }) => {
         label: c.name,
       }))
     : "";
-  const style = {
-    control: (base) => ({
-      ...base,
-      border: 0,
-      // This line disable the blue border
-      boxShadow: "none",
-    }),
-  };
 
   const handleDelete = () => {
     const response = fetch(
@@ -69,7 +60,6 @@ const ProductUnitPopup = ({ data, setOpen, setSelected, open }) => {
         body: JSON.stringify({
           idproduct: ProductId,
           iduom: UomId,
-          unitQty: Qty,
         }),
       }
     );
@@ -81,7 +71,7 @@ const ProductUnitPopup = ({ data, setOpen, setSelected, open }) => {
             idproductUnitConversion: data.idproductUnitConversion,
             idproduct: ProductId,
             iduom: UomId,
-            unitQty: Qty,
+
             code: ProductCode,
             product: ProductName,
             uom: UomName,
@@ -152,7 +142,6 @@ const ProductUnitPopup = ({ data, setOpen, setSelected, open }) => {
             id="product"
             required
             options={options_product}
-            styles={style}
             classNamePrefix="select2-selection"
             onChange={(e) => {
               setProductId(e.value);
@@ -176,7 +165,6 @@ const ProductUnitPopup = ({ data, setOpen, setSelected, open }) => {
             id="uom"
             required
             options={options_uom}
-            styles={style}
             classNamePrefix="select2-selection"
             onChange={(e) => {
               setUomId(e.value);
@@ -187,25 +175,6 @@ const ProductUnitPopup = ({ data, setOpen, setSelected, open }) => {
             )}
             className="focus:ring-black focus:border-black"
           ></Select>
-        </div>
-        <div>
-          <label
-            for="qty"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Quantity
-          </label>
-          <input
-            type="text"
-            id="qty"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="Ex: 1000"
-            required
-            value={Qty}
-            onChange={(e) => {
-              setQty(e.target.value);
-            }}
-          />
         </div>
         <div className="flex flex-start gap-4 mt-3">
           <Button
@@ -222,7 +191,7 @@ const ProductUnitPopup = ({ data, setOpen, setSelected, open }) => {
             onClick={handleUpdate}
             severity="success"
             size="small"
-            disabled={(!ProductId || !UomId || !Qty) && true}
+            disabled={(!ProductId || !UomId) && true}
           />
         </div>
       </div>

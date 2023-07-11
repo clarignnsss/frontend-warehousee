@@ -19,16 +19,6 @@ const AttrValuePopup = ({ data, setOpen, open }) => {
         label: c.name,
       }))
     : "";
-  const defaultValue = options.find((op) => op.value == 2);
-
-  const style = {
-    control: (base) => ({
-      ...base,
-      border: 0,
-      // This line disable the blue border
-      boxShadow: "none",
-    }),
-  };
 
   const handleDelete = () => {
     const response = fetch(
@@ -138,7 +128,6 @@ const AttrValuePopup = ({ data, setOpen, open }) => {
           <Select
             id="attr"
             options={options}
-            styles={style}
             classNamePrefix="select2-selection"
             onChange={(e) => {
               setIdAttribute(e.value);

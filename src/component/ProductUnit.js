@@ -12,7 +12,6 @@ const ProductUnit = () => {
   const { productunit, setProductUnit } = useContext(ProductUnitContext);
   const [ProductId, setProductId] = useState();
   const [UomId, setUomId] = useState();
-  const [Qty, setQty] = useState();
   const { uom } = useContext(UomContext);
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState(false);
@@ -48,7 +47,6 @@ const ProductUnit = () => {
     const newProductUnit = {
       idproduct: ProductId,
       iduom: UomId,
-      unitQty: Qty,
     };
     const response = fetch("http://localhost:4000/api/productunit", {
       method: "POST",
@@ -85,7 +83,6 @@ const ProductUnit = () => {
           setAlertMsg(result);
         }
 
-        setQty("");
         setTimeout(() => {
           setAlert(false);
         }, 3000);
@@ -167,25 +164,6 @@ const ProductUnit = () => {
               }}
               className="focus:ring-black focus:border-black"
             ></Select>
-          </div>
-          <div>
-            <label
-              for="qty"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Quantity
-            </label>
-            <input
-              type="text"
-              id="qty"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Ex: 1000"
-              required
-              value={Qty}
-              onChange={(e) => {
-                setQty(e.target.value);
-              }}
-            />
           </div>
         </div>
         <button

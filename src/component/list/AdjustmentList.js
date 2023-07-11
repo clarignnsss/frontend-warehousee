@@ -1,7 +1,8 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useResolvedPath } from "react-router-dom";
 
 const AdjustmentList = () => {
+  const url = useResolvedPath("").pathname;
   return (
     <li
       className="group grow flex-auto"
@@ -46,7 +47,10 @@ const AdjustmentList = () => {
           />
         </svg>
 
-        <Link className="block py-2 px-2 hover:text-[#FFC30D] text-[#9A9A9A]  transition duration-500  rounded-sm">
+        <Link
+          to={`/home/adjview`}
+          className="block py-2 px-2  hover:text-[#FFC30D] text-[#9A9A9A]  transition duration-500  rounded-sm"
+        >
           Adjustment
         </Link>
       </p>

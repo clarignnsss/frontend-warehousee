@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext } from "react";
 import { TitleContext } from "../context/TitleContext";
 import { WarehouseContext } from "../context/WarehouseContext";
 import { Alert } from "flowbite-react";
+import { BiArrowBack } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
 
 const Warehouse = () => {
   const { title, setTitle } = useContext(TitleContext);
@@ -15,6 +17,12 @@ const Warehouse = () => {
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState(false);
   const [alertMsg, setAlertMsg] = useState(false);
+
+  const history = useNavigate();
+
+  const goBack = () => {
+    history(-1);
+  };
 
   useEffect(() => {
     setTitle("Warehouse");
@@ -76,9 +84,17 @@ const Warehouse = () => {
   };
   return (
     <div className="px-4 md:h-[650px] md:overflow-y-scroll">
+      <span className="py-3 block cursor-pointer " onClick={goBack}>
+        <BiArrowBack
+          className="w-12 h-12 bg-[#ffff] hover:bg-[#d7d6d6] rounded-full p-3
+        "
+        />
+      </span>
+
       <div className="py-4 text-center text-[#2C4856] font-extrabold text-2xl">
         Warehouse
       </div>
+
       {alert ? (
         <Alert color={`${alertColor}`} className="mb-3">
           <span>

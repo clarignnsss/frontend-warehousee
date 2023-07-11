@@ -21,6 +21,8 @@ import {
 } from "../context/ProductAttributeContext";
 import { ProductUnitContextProvider } from "../context/ProductUnitContext";
 import { WarehouseContextProvider } from "../context/WarehouseContext";
+import { StockContextProvider } from "../context/StockContext";
+import { AdjustmentContextProvider } from "../context/AdjustmentContext";
 
 const Home = () => {
   const { setUserInfo, userInfo } = useContext(UserContext);
@@ -67,20 +69,24 @@ const Home = () => {
                         <AttributeContextProvider>
                           <AttrValueContextProvider>
                             <WarehouseContextProvider>
-                              <div className="md:flex relative">
-                                <div className="h-screen w-72 overflow-y-scroll bg-black">
-                                  <Sidebar
-                                    isOpen={isSidebarOpen}
-                                    setIsOpen={handleSidebarToggle}
-                                  ></Sidebar>
-                                </div>
-                                <div className="w-full drop-shadow bg-gray-300">
-                                  <Menu
-                                    handleClick={handleSidebarToggle}
-                                  ></Menu>
-                                  <Outlet></Outlet>
-                                </div>
-                              </div>
+                              <StockContextProvider>
+                                <AdjustmentContextProvider>
+                                  <div className="md:flex relative">
+                                    <div className="h-screen w-72 overflow-y-scroll bg-black">
+                                      <Sidebar
+                                        isOpen={isSidebarOpen}
+                                        setIsOpen={handleSidebarToggle}
+                                      ></Sidebar>
+                                    </div>
+                                    <div className="w-full drop-shadow bg-gray-300">
+                                      <Menu
+                                        handleClick={handleSidebarToggle}
+                                      ></Menu>
+                                      <Outlet></Outlet>
+                                    </div>
+                                  </div>
+                                </AdjustmentContextProvider>
+                              </StockContextProvider>
                             </WarehouseContextProvider>
                           </AttrValueContextProvider>
                         </AttributeContextProvider>

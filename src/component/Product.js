@@ -1,37 +1,16 @@
 import React, { useEffect, useState, useContext } from "react";
 import { TitleContext } from "../context/TitleContext";
-import { UomContext } from "../context/UomContext";
 import { Alert } from "flowbite-react";
-import Select from "react-select";
 import { ProductContext } from "../context/ProductContext";
-
+import { Navigate } from "react-router-dom";
 const Product = () => {
   const { setTitle } = useContext(TitleContext);
   const { product, setProduct } = useContext(ProductContext);
   const [code, setCode] = useState();
   const [Name, setName] = useState();
-  const [Qty, setQty] = useState();
-  const [IdUom, setIdUom] = useState();
-  const { uom } = useContext(UomContext);
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState(false);
   const [alertMsg, setAlertMsg] = useState(false);
-
-  const options = uom
-    ? uom.map((c) => ({
-        value: c.iduom,
-        label: c.name,
-      }))
-    : "";
-
-  const style = {
-    control: (base) => ({
-      ...base,
-      border: 0,
-      // This line disable the blue border
-      boxShadow: "none",
-    }),
-  };
 
   useEffect(() => {
     setTitle("Product");
@@ -41,8 +20,6 @@ const Product = () => {
     const newProduct = {
       code,
       name: Name,
-      quantity: Qty,
-      baseUOM: IdUom,
     };
     const response = fetch("http://localhost:4000/api/product", {
       method: "POST",
@@ -73,7 +50,7 @@ const Product = () => {
         setAlert(true);
         if (result.protocol41) {
           setAlertColor("success");
-          setAlertMsg("Attribute Value data successfully submitted !");
+          setAlertMsg("Product data successfully submitted !");
         } else {
           setAlertColor("failure");
           setAlertMsg(result);
@@ -81,7 +58,6 @@ const Product = () => {
 
         setCode("");
         setName("");
-        setQty("");
         setTimeout(() => {
           setAlert(false);
         }, 3000);
@@ -165,43 +141,6 @@ const Product = () => {
                 setName(e.target.value);
               }}
             />
-          </div>
-          <div>
-            <label
-              for="qty"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Quantity
-            </label>
-            <input
-              type="text"
-              id="qty"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Ex: 1000"
-              required
-              value={Qty}
-              onChange={(e) => {
-                setQty(e.target.value);
-              }}
-            />
-          </div>
-          <div>
-            <label
-              for="uom"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              UOM
-            </label>
-            <Select
-              id="uom"
-              options={options}
-              styles={style}
-              classNamePrefix="select2-selection"
-              onChange={(e) => {
-                setIdUom(e.value);
-              }}
-              className="focus:ring-black focus:border-black"
-            ></Select>
           </div>
         </div>
         <button
