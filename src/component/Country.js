@@ -1,13 +1,19 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Alert } from "flowbite-react";
 import { CountryContext } from "../context/CountryContext.js";
+import { TitleContext } from "../context/TitleContext.js";
 
 const Country = () => {
+  const { setTitle } = useContext(TitleContext);
   const [countryValue, setCountryValue] = useState("");
   const { country, setCountry } = useContext(CountryContext);
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState("");
   const [alertMsg, setAlertMsg] = useState("");
+
+  useEffect(() => {
+    setTitle("Master Data");
+  });
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();

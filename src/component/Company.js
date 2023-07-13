@@ -3,12 +3,15 @@ import { TitleContext } from "../context/TitleContext";
 import { CurrencyContext } from "../context/currencyContext";
 import { CountryContext } from "../context/CountryContext";
 import { ProvinceContext } from "../context/ProvinceContext";
+import { CompanyContext } from "../context/CompanyContext";
 import { CityContext } from "../context/CityContext";
 import { Alert } from "flowbite-react";
+
 import Select from "react-select";
 
 const Company = () => {
   const { currency } = useContext(CurrencyContext);
+  const { company, setCompany } = useContext(CompanyContext);
   const { setTitle } = useContext(TitleContext);
   const { country } = useContext(CountryContext);
   const { province } = useContext(ProvinceContext);
@@ -86,12 +89,19 @@ const Company = () => {
         return res.json();
       })
       .then((result) => {
-        console.log(result);
+        const id = result["insertId"];
+        fetch(`http://localhost:4000/api/company?idcompany=${id}`)
+          .then((res) => {
+            return res.json();
+          })
+          .then((result) => {
+            console.log(result);
+            setCompany([...company, ...result]);
+          });
         setAlert(true);
         if (result.protocol41) {
           setAlertColor("success");
           setAlertMsg("Company data successfully submitted !");
-          // setCurrency([...currency, newCurrency]);
         } else {
           setAlertColor("failure");
           setAlertMsg(result);
@@ -304,7 +314,7 @@ const Company = () => {
 
         <button
           type="submit"
-          className="text-white block ml-auto   bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+          className="text-white block ml-auto   bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 "
         >
           Submit
         </button>
