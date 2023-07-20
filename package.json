@@ -5,21 +5,17 @@
   "private": true,
   "dependencies": {
     "@heroicons/react": "^2.0.18",
-    "@material-tailwind/react": "^2.0.4",
+    "@material-tailwind/react": "^2.0.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "flowbite": "^1.7.0",
-    "flowbite-react": "^0.4.10",
-    "icons": "^1.0.0",
-    "primereact": "^9.6.0",
+    "flowbite": "^1.6.5",
+    "flowbite-react": "^0.4.9",
+    "primereact": "^9.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^4.10.1",
-    "react-script": "^2.0.5",
-    "react-scripts": "^5.0.1",
+    "react-scripts": "5.0.1",
     "react-select": "^5.7.3",
-    "scripts": "^0.1.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -47,7 +43,7 @@
     ]
   },
   "devDependencies": {
-    "react-router-dom": "^6.14.1",
+    "react-router-dom": "^6.11.2",
     "tailwindcss": "^3.3.2"
   }
 }
