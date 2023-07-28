@@ -1,44 +1,59 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Alert } from "flowbite-react";
-import { WarehouseContext } from "../context/WarehouseContext";
-import Select from "react-select";
 import { RiDashboardFill } from "react-icons/ri";
-import { StockContext } from "../context/StockContext";
-import StockProductPopup from "./StockProductPopup";
-const Stock = () => {
-  const [idwarehouse, setIdWarehouse] = useState("");
-  const { stock, setStock } = useContext(StockContext);
-  const [qty, setQty] = useState("");
+import { VendorContext } from "../context/VendorContext";
+import { POContext } from "../context/PoContext";
+import Select from "react-select";
+import { BiArrowBack } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
+
+import POStockPopup from "./POStockPopup";
+const PO = () => {
+  const { po, setPO } = useContext(POContext);
+  const { vendor, setVendor } = useContext(VendorContext);
+  const [qty, setQty] = useState(0);
+  const [idvendor, setIdVendor] = useState("");
+  const [vendor_name, setVendorName] = useState("");
+  const [status, setStatus] = useState("Waiting");
+  const [price, setPrice] = useState(0);
+  const [total, setTotal] = useState(0);
   const [selected, setSelected] = useState("");
   const [openPopup, setOpenPopup] = useState(false);
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState("");
   const [alertMsg, setAlertMsg] = useState("");
-  const { warehouse } = useContext(WarehouseContext);
 
-  const options_warehouse = warehouse
-    ? warehouse.map((c) => ({
-        value: c.idwarehouse,
-        label: c.warehouse_name,
+  const options_vendor = vendor
+    ? vendor.map((c) => ({
+        value: c.idvendor,
+        label: c.vendor_name,
       }))
     : "";
+  useEffect(() => {
+    setTotal(price * qty);
+  }, [qty, price]);
+
+  const history = useNavigate();
+
+  const goBack = () => {
+    history(-1);
+  };
 
   const handleSubmit = (evt) => {
     evt.preventDefault();
 
-    const newStock = {
-      idwarehouse,
-      idproductUnitConversion: selected.idproductUnitConversion,
-      qty,
-    };
-
-    const response = fetch("http://localhost:4000/api/stock", {
+    const response = fetch("http://localhost:4000/api/po", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ...newStock,
+        idvendor,
+        idstock: selected.idstock,
+        status,
+        quantity: qty,
+        price,
+        total,
       }),
     });
     response
@@ -49,25 +64,28 @@ const Stock = () => {
         return res.json();
       })
       .then((result) => {
+        console.log(result);
         const id = result["insertId"];
-        fetch(`http://localhost:4000/api/stock/${id}`)
+        fetch(`http://localhost:4000/api/po/${id}`)
           .then((res) => {
             return res.json();
           })
           .then((result) => {
-            console.log(result);
-            setStock([...stock, ...result]);
+            setPO([...po, ...result]);
           });
+
         setAlert(true);
         if (result.protocol41) {
           setAlertColor("success");
-          setAlertMsg("Stock data successfully submitted !");
+          setAlertMsg("Purchase Order data successfully submitted !");
         } else {
           setAlertColor("failure");
           setAlertMsg(result);
         }
 
-        setQty("");
+        setPrice(0);
+        setQty(0);
+        setTotal(0);
         setSelected("");
         setTimeout(() => {
           setAlert(false);
@@ -79,11 +97,17 @@ const Stock = () => {
   return (
     <>
       <div className="px-4 md:h-[650px] md:overflow-y-scroll">
+        <span className="py-3 block cursor-pointer " onClick={goBack}>
+          <BiArrowBack
+            className="w-12 h-12 bg-[#ffff] hover:bg-[#d7d6d6] rounded-full p-3
+        "
+          />
+        </span>
         <div className="py-4 text-center text-[#2C4856] font-extrabold text-2xl">
-          Stock
+          Purchase Order
         </div>
         {openPopup ? (
-          <StockProductPopup
+          <POStockPopup
             selected={selected}
             setSelected={setSelected}
             handleOpenPopup={setOpenPopup}
@@ -127,31 +151,11 @@ const Stock = () => {
         )}
 
         <form onSubmit={handleSubmit} className="mb-10">
-          <div class="grid gap-6 mb-6 md:grid-cols-2">
-            <div>
-              <label
-                for="warehouse"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Warehouse
-              </label>
-              <Select
-                id="warehouse"
-                options={options_warehouse}
-                classNamePrefix="select2-selection"
-                onChange={(e) => {
-                  setIdWarehouse(e.value);
-                }}
-                required
-                className="focus:ring-black focus:border-black"
-              ></Select>
-            </div>
-          </div>
           <div
             className="flex items-center space-x-3 mb-5 p-2 bg-white w-44 rounded-md cursor-pointer"
             onClick={() => setOpenPopup(!openPopup)}
           >
-            <p className="">Select Product</p>
+            <p className="">Select Stock</p>
             <RiDashboardFill className="w-8 h-8 " />
           </div>
           <div class="grid gap-6 mb-6 md:grid-cols-2">
@@ -159,8 +163,8 @@ const Stock = () => {
               <>
                 <div>
                   <label
-                    for="warehouse"
-                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    for="product"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
                     Product
                   </label>
@@ -172,6 +176,24 @@ const Stock = () => {
                       required
                       disabled
                       value={selected.product}
+                    />
+                  </span>
+                </div>
+                <div>
+                  <label
+                    for="code"
+                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Product Code
+                  </label>
+                  <span className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      id="code"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      required
+                      disabled
+                      value={selected.code}
                     />
                   </span>
                 </div>
@@ -198,7 +220,7 @@ const Stock = () => {
                     for="qty"
                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Quantity
+                    Quantity Stock
                   </label>
 
                   <input
@@ -207,10 +229,82 @@ const Stock = () => {
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     required
                     placeholder="input quantity"
+                    value={selected.qty}
+                    disabled
+                  />
+                </div>
+                <div>
+                  <label
+                    for="vendor"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Vendor
+                  </label>
+                  <Select
+                    id="vendor"
+                    options={options_vendor}
+                    classNamePrefix="select2-selection"
+                    onChange={(e) => {
+                      setIdVendor(e.value);
+                      setVendorName(e.label);
+                    }}
+                    required
+                    className="focus:ring-black focus:border-black"
+                  ></Select>
+                </div>
+                <div>
+                  <label
+                    for="vendor"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Qty
+                  </label>
+                  <input
+                    type="number"
+                    id="qty"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    required
+                    placeholder="input quantity"
                     value={qty}
                     onChange={(e) => {
                       setQty(e.target.value);
                     }}
+                  />
+                </div>
+                <div>
+                  <label
+                    for="vendor"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Price
+                  </label>
+                  <input
+                    type="number"
+                    id="qty"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    required
+                    placeholder="input quantity"
+                    value={price}
+                    onChange={(e) => {
+                      setPrice(e.target.value);
+                    }}
+                  />
+                </div>
+                <div>
+                  <label
+                    for="vendor"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Total
+                  </label>
+                  <input
+                    type="number"
+                    id="qty"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    required
+                    placeholder="input quantity"
+                    value={total}
+                    disabled
                   />
                 </div>
               </>
@@ -229,4 +323,4 @@ const Stock = () => {
   );
 };
 
-export default Stock;
+export default PO;

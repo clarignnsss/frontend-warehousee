@@ -3,10 +3,11 @@ import { UserContext } from "../context/UserContext";
 
 const DashboardView = () => {
   const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
 
   return (
     <div className="p-4">
-      <h1>Welcome, {userInfo.username}</h1>
+      <h1>Welcome, {username}</h1>
     </div>
   );
 };

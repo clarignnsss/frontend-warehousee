@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import { AdjustmentContext } from "../context/AdjustmentContext";
 import { StockContext } from "../context/StockContext";
 import { Button } from "primereact/button";
-import Select from "react-select";
+import { VendorContext } from "../context/VendorContext";
 
-const AdjustmentPopup = ({
+const VendorPopup = ({
   data,
   setOpen,
   open,
@@ -13,121 +13,94 @@ const AdjustmentPopup = ({
   setAlertMsg,
   setAlertColor,
 }) => {
-  const { adjustment, setAdjustment } = useContext(AdjustmentContext);
-  const { stock, setStock } = useContext(StockContext);
-  const [qtyAdj, setQtyAdj] = useState(data.adjustment_qty);
+  const { vendor, setVendor } = useContext(VendorContext);
+  const [vendor_name, setVendorName] = useState(data.vendor_name);
+  const [address, setAddress] = useState(data.address);
+  const [contact_person, setCP] = useState(data.contact_person);
+  const [contact_number, setCN] = useState(data.contact_number);
+  const [email, setEmail] = useState(data.email);
 
   const popup = useRef();
 
-  const handleDelete = async () => {
-    const response = await fetch(
-      `http://localhost:4000/api/adjustment/${data.idadjustment}`,
+  const handleDelete = () => {
+    const response = fetch(
+      `http://localhost:4000/api/vendor/${data.idvendor}`,
       {
         method: "DELETE",
       }
-    );
-    const res = await response.json();
-    if (response.ok) {
-      const newAdj = adjustment.filter(
-        (item) => item.idadjustment !== data.idadjustment
-      );
-
-      setAdjustment(newAdj);
-      setAlertColor("success");
-      setAlertMsg("Adjustment data successfully deleted !");
-      setAlert(true);
-      setTimeout(() => {
-        setAlert(false);
-      }, 3000);
-
-      const newStock = stock.map((s) => {
-        if (s.idstock == data.idstock) {
-          return {
-            idstock: data.idstock,
-            idwarehouse: data.idwarehouse,
-            warehouse_name: data.warehouse_name,
-            idproductUnitConversion: data.idproductUnitConversion,
-            iduom: data.iduom,
-            uom: data.uom,
-            idproduct: data.idproduct,
-            code: data.code,
-            product: data.product,
-            qty: res.qty,
-          };
+    )
+      .then((res) => {
+        if (!res.ok) {
+          return Promise.reject(`Error: ${res.status}`);
         }
-        return s;
+        return res.json();
+      })
+      .then((res) => {
+        if (res.protocol41) {
+          setAlertColor("success");
+          setAlertMsg("Stock data successfully deleted !");
+          setAlert(true);
+          const newVendor = vendor.filter(
+            (item) => item.idvendor !== data.idvendor
+          );
+          setVendor(newVendor);
+          setOpen(!open);
+          setTimeout(() => {
+            setAlert(false);
+          }, 3000);
+        } else {
+          setAlert(true);
+          setAlertColor("failure");
+          setAlertMsg(res);
+          setOpen(!open);
+          setTimeout(() => {
+            setAlert(false);
+          }, 3000);
+        }
       });
-      setStock(newStock);
-      setSelected("");
-      setOpen(!open);
-    } else {
-      setOpen(!open);
-      setAlert(true);
-      setAlertColor("failure");
-      setAlertMsg(res);
-      setTimeout(() => {
-        setAlert(false);
-      }, 3000);
-    }
   };
   const handleUpdate = async () => {
     const response = await fetch(
-      `http://localhost:4000/api/adjustment/${data.idadjustment}`,
+      `http://localhost:4000/api/vendor/${data.idvendor}`,
       {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          idstock: data.idstock,
-          adjustment_qty: parseInt(qtyAdj),
+          vendor_name,
+          address,
+          contact_person,
+          contact_number,
+          email,
         }),
       }
     );
 
     const res = await response.json();
     if (response.ok) {
-      const newAdj = adjustment.map((u) => {
-        if (u.idadjustment === data.idadjustment) {
+      const newVendor = vendor.map((u) => {
+        if (u.idvendor === data.idvendor) {
           return {
-            idadjustment: data.idadjustment,
-            idstock: data.idstock,
-            adjustment_qty: qtyAdj,
-            warehouse_name: data.warehouse_name,
-            code: data.code,
-            product: data.product,
-            uom: data.uom,
+            idvendor: data.idvendor,
+            vendor_name,
+            address,
+            contact_person,
+            contact_number,
+            email,
           };
         }
         return u;
       });
-      setAdjustment(newAdj);
+      setVendor(newVendor);
       setSelected("");
       setOpen(!open);
       setAlertColor("success");
-      setAlertMsg("Adjustment data successfully updated !");
+      setAlertMsg("Vendor data successfully updated !");
       setAlert(true);
       setTimeout(() => {
         setAlert(false);
       }, 3000);
-      const newStock = stock.map((s) => {
-        if (s.idstock == data.idstock) {
-          return {
-            idstock: data.idstock,
-            idwarehouse: data.idwarehouse,
-            warehouse_name: data.warehouse_name,
-            idproductUnitConversion: data.idproductUnitConversion,
-            iduom: data.iduom,
-            uom: data.uom,
-            idproduct: data.idproduct,
-            code: data.code,
-            product: data.product,
-            qty: res.qty,
-          };
-        }
-        return s;
-      });
-      setStock(newStock);
     } else {
       setOpen(!open);
       setAlert(true);
@@ -172,14 +145,14 @@ const AdjustmentPopup = ({
             for="name"
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            ID Adjustment
+            ID Vendor
           </label>
           <input
             type="text"
             id="name"
             class="bg-gray-50 border mb-2 border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             required
-            value={data.idadjustment}
+            value={data.idvendor}
             disabled
           />
         </div>
@@ -188,15 +161,17 @@ const AdjustmentPopup = ({
             for="warehouse"
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Warehouse
+            Vendor
           </label>
           <input
             type="text"
             id="name"
             class="bg-gray-50 border mb-2 border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             required
-            value={data.warehouse_name}
-            disabled
+            value={vendor_name}
+            onChange={(e) => {
+              setVendorName(e.target.value);
+            }}
           />
         </div>
         <div>
@@ -204,15 +179,17 @@ const AdjustmentPopup = ({
             for="product"
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Product
+            Address
           </label>
           <input
             type="text"
             id="product"
-            disabled
             class="bg-gray-50 border mb-2 border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             required
-            value={data.product}
+            value={address}
+            onChange={(e) => {
+              setAddress(e.target.value);
+            }}
           />
         </div>
         <div>
@@ -220,15 +197,17 @@ const AdjustmentPopup = ({
             for="code"
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Code
+            Contact Person
           </label>
           <input
             type="text"
             id="code"
-            disabled
             class="bg-gray-50 border mb-2 border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             required
-            value={data.code}
+            value={contact_person}
+            onChange={(e) => {
+              setCP(e.target.value);
+            }}
           />
         </div>
         <div>
@@ -236,32 +215,34 @@ const AdjustmentPopup = ({
             for="uom"
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            UOM
+            Contact Number
           </label>
           <input
             type="text"
             id="uom"
-            disabled
             class="bg-gray-50 border mb-2 border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             required
-            value={data.uom}
+            value={contact_number}
+            onChange={(e) => {
+              setCN(e.target.value);
+            }}
           />
         </div>
         <div>
           <label
-            for="qty"
+            for="email"
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Adjustment Quantity
+            Email
           </label>
           <input
-            type="number"
-            id="qty"
+            type="text"
+            id="email"
             class="bg-gray-50 border mb-2 border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             required
-            value={qtyAdj}
+            value={email}
             onChange={(e) => {
-              setQtyAdj(e.target.value);
+              setEmail(e.target.value);
             }}
           />
         </div>
@@ -277,7 +258,14 @@ const AdjustmentPopup = ({
             label="Update"
             severity="success"
             size="small"
-            disabled={!qtyAdj && true}
+            disabled={
+              (!vendor_name ||
+                !address ||
+                !email ||
+                !contact_number ||
+                !contact_person) &&
+              true
+            }
             onClick={handleUpdate}
           />
         </div>
@@ -286,4 +274,4 @@ const AdjustmentPopup = ({
   );
 };
 
-export default AdjustmentPopup;
+export default VendorPopup;

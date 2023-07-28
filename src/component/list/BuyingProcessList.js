@@ -62,18 +62,13 @@ const BuyingProcessList = () => {
       {isMenuOpen ? (
         <ul className="px-10 flex flex-col space-y-2 ">
           <li>
-            <Link className="py-2 hover:text-[#62D64F]" to="company">
+            <Link className="py-2 hover:text-[#62D64F]" to="vendorview">
               Vendor
             </Link>
           </li>
           <li>
-            <Link className="py-2 hover:text-[#62D64F]" to="company">
+            <Link className="py-2 hover:text-[#62D64F]" to="poview">
               Purchase Order
-            </Link>
-          </li>
-          <li>
-            <Link className="py-2 hover:text-[#62D64F]" to="company">
-              Received Purchase Order
             </Link>
           </li>
         </ul>

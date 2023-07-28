@@ -4,7 +4,14 @@ import { WarehouseContext } from "../context/WarehouseContext";
 import { Button } from "primereact/button";
 import Select from "react-select";
 
-const StockPopup = ({ data, setOpen, open }) => {
+const StockPopup = ({
+  data,
+  setOpen,
+  open,
+  setAlert,
+  setAlertMsg,
+  setAlertColor,
+}) => {
   const { stock, setStock } = useContext(StockContext);
   const { warehouse } = useContext(WarehouseContext);
   const [idwarehouse, setIdWarehouse] = useState(data.idwarehouse);
@@ -20,15 +27,38 @@ const StockPopup = ({ data, setOpen, open }) => {
     : "";
 
   const handleDelete = () => {
-    const response = fetch(`http://localhost:4000/api/uom/${data.iduom}`, {
+    const response = fetch(`http://localhost:4000/api/stock/${data.idstock}`, {
       method: "DELETE",
-    }).then((res) => {
-      return res.json();
-    });
-
-    const newStock = stock.filter((item) => item.idstock !== data.idstock);
-    setStock(newStock);
-    setOpen(!open);
+    })
+      .then((res) => {
+        if (!res.ok) {
+          return Promise.reject(`Error: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((res) => {
+        if (res.protocol41) {
+          setAlertColor("success");
+          setAlertMsg("Stock data successfully deleted !");
+          setAlert(true);
+          const newStock = stock.filter(
+            (item) => item.idstock !== data.idstock
+          );
+          setStock(newStock);
+          setOpen(!open);
+          setTimeout(() => {
+            setAlert(false);
+          }, 3000);
+        } else {
+          setAlert(true);
+          setAlertColor("failure");
+          setAlertMsg(res);
+          setOpen(!open);
+          setTimeout(() => {
+            setAlert(false);
+          }, 3000);
+        }
+      });
   };
   const handleUpdate = async () => {
     const response = await fetch(
@@ -44,29 +74,45 @@ const StockPopup = ({ data, setOpen, open }) => {
           qty: parseInt(qty),
         }),
       }
-    );
-
-    if (response.ok) {
-      const newStock = stock.map((u) => {
-        if (u.idstock === data.idstock) {
-          return {
-            idstock: data.idstock,
-            idwarehouse: idwarehouse,
-            warehouse_name: warehouseName,
-            idproductUnitConversion: data.idproductUnitConversion,
-            iduom: data.iduom,
-            uom: data.uom,
-            idproduct: data.idproduct,
-            code: data.code,
-            product: data.product,
-            qty: qty,
-          };
+    )
+      .then((res) => {
+        if (!res.ok) {
+          return Promise.reject(`Error: ${res.status}`);
         }
-        return u;
+        return res.json();
+      })
+      .then((res) => {
+        if (res.protocol41) {
+          setAlertColor("success");
+          setAlertMsg("Stock data successfully updated !");
+          setAlert(true);
+          const newStock = stock.map((u) => {
+            if (u.idstock === data.idstock) {
+              return {
+                idstock: data.idstock,
+                idwarehouse: idwarehouse,
+                warehouse_name: warehouseName,
+                idproductUnitConversion: data.idproductUnitConversion,
+                iduom: data.iduom,
+                uom: data.uom,
+                idproduct: data.idproduct,
+                code: data.code,
+                product: data.product,
+                qty: qty,
+              };
+            }
+            return u;
+          });
+          setStock(newStock);
+          setOpen(!open);
+          setTimeout(() => {
+            setAlert(false);
+          }, 3000);
+        } else {
+          setAlertColor("failure");
+          setAlertMsg(res);
+        }
       });
-      setStock(newStock);
-      setOpen(!open);
-    }
   };
   useEffect(() => {
     const handleClick = (e) => {

@@ -23,6 +23,8 @@ import { ProductUnitContextProvider } from "../context/ProductUnitContext";
 import { WarehouseContextProvider } from "../context/WarehouseContext";
 import { StockContextProvider } from "../context/StockContext";
 import { AdjustmentContextProvider } from "../context/AdjustmentContext";
+import { VendorContextProvider } from "../context/VendorContext";
+import { POContextProvider } from "../context/PoContext";
 
 const Home = () => {
   const { setUserInfo, userInfo } = useContext(UserContext);
@@ -71,20 +73,24 @@ const Home = () => {
                             <WarehouseContextProvider>
                               <StockContextProvider>
                                 <AdjustmentContextProvider>
-                                  <div className="md:flex relative">
-                                    <div className="h-screen w-72 overflow-y-scroll bg-black">
-                                      <Sidebar
-                                        isOpen={isSidebarOpen}
-                                        setIsOpen={handleSidebarToggle}
-                                      ></Sidebar>
-                                    </div>
-                                    <div className="w-full drop-shadow bg-gray-300">
-                                      <Menu
-                                        handleClick={handleSidebarToggle}
-                                      ></Menu>
-                                      <Outlet></Outlet>
-                                    </div>
-                                  </div>
+                                  <VendorContextProvider>
+                                    <POContextProvider>
+                                      <div className="md:flex relative">
+                                        <div className="w-72 overflow-y-scroll h-screen  bg-black">
+                                          <Sidebar
+                                            isOpen={isSidebarOpen}
+                                            setIsOpen={handleSidebarToggle}
+                                          ></Sidebar>
+                                        </div>
+                                        <div className="w-full drop-shadow bg-gray-300">
+                                          <Menu
+                                            handleClick={handleSidebarToggle}
+                                          ></Menu>
+                                          <Outlet></Outlet>
+                                        </div>
+                                      </div>
+                                    </POContextProvider>
+                                  </VendorContextProvider>
                                 </AdjustmentContextProvider>
                               </StockContextProvider>
                             </WarehouseContextProvider>

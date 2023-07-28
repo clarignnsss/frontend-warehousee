@@ -37,6 +37,10 @@ import StockView from "./component/StockView";
 import AdjustmentView from "./component/AdjustmentView";
 import Adjustment from "./component/Adjustment";
 import DashboardView from "./component/DashboardView";
+import VendorView from "./component/VendorView";
+import Vendor from "./component/Vendor";
+import POView from "./component/POView";
+import PO from "./component/PO";
 
 function App() {
   return (
@@ -80,6 +84,10 @@ function App() {
                   <Route path="stockview" element={<StockView />} />
                   <Route path="adjview" element={<AdjustmentView />} />
                   <Route path="addadjustment" element={<Adjustment />} />
+                  <Route path="vendorview" element={<VendorView />} />
+                  <Route path="addvendor" element={<Vendor />} />
+                  <Route path="poview" element={<POView />} />
+                  <Route path="addpo" element={<PO />} />
                 </Route>
               </Route>
             </Routes>

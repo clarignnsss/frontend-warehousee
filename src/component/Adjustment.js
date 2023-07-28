@@ -26,7 +26,7 @@ const Adjustment = () => {
       },
       body: JSON.stringify({
         idstock: selected.idstock,
-        qtyAdj: parseInt(-qtyAdjSum),
+        adjustment_qty: parseInt(-qtyAdjSum),
       }),
     });
     response
@@ -222,7 +222,7 @@ const Adjustment = () => {
                     for="qtyAdj"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Quantity Adjustment
+                    New Quantity
                   </label>
 
                   <input
