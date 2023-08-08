@@ -1,12 +1,9 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { POContext } from "../context/PoContext";
 import { Button } from "primereact/button";
-import { Tag } from "primereact/tag";
-import Select from "react-select";
-import { VendorContext } from "../context/VendorContext";
+import { TransferContext } from "../context/TransferContext";
 import { StockContext } from "../context/StockContext";
 
-const POPopup = ({
+const TransferPopup = ({
   data,
   setOpen,
   open,
@@ -15,68 +12,157 @@ const POPopup = ({
   setAlertMsg,
   setAlertColor,
 }) => {
-  const { po, setPO } = useContext(POContext);
-  const [idpurchase_order, setIdPO] = useState(data.idpurchase_order);
-  const [idvendor, setIdVendor] = useState(data.idvendor);
-  const [idstock, setIdStock] = useState(data.idstock);
-  const [status, setStatus] = useState(data.status);
-  const [quantity, setQty] = useState(data.quantity);
-  const [price, setPrice] = useState(data.price);
-  const [total, setTotal] = useState(data.total);
-  const [warehouse_name, setWarehouseName] = useState(data.warehouse_name);
+  const { transfer, setTransfer } = useContext(TransferContext);
+  const { stock, setStock } = useContext(StockContext);
+  const [idtransfer, setIdTransfer] = useState(data.idtransfer);
   const [product, setProduct] = useState(data.product);
   const [code, setCode] = useState(data.code);
-  const [uom, setUOM] = useState(data.uom);
-  const [vendor_name, setVendorName] = useState(data.vendor_name);
-  const { vendor, setVendor } = useContext(VendorContext);
-  const { stock, setStock } = useContext(StockContext);
-
-  const getSeverity = (po) => {
-    switch (po.status) {
-      case "Done":
-        return "success";
-
-      case "Waiting":
-        return "warning";
-
-      default:
-        return null;
-    }
-  };
-
-  const options_vendor = vendor
-    ? vendor.map((c) => ({
-        value: c.idvendor,
-        label: c.vendor_name,
-      }))
-    : "";
+  const [uom, setUom] = useState(data.uom);
+  const [qty, setQty] = useState(data.qty);
+  const [qtyDiff, setQtyDiff] = useState(0);
+  const [warehouseFrom, setWarehouseTo] = useState(data.warehouseFrom);
+  const [warehouseTo, setWarehouseFrom] = useState(data.warehouseTo);
 
   const popup = useRef();
 
+  const handleDelete = () => {
+    const response = fetch(
+      `http://localhost:4000/api/transfer/${data.idtransfer}`,
+      {
+        method: "DELETE",
+      }
+    )
+      .then((res) => {
+        if (!res.ok) {
+          return Promise.reject(`Error: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((res) => {
+        if (res.protocol41) {
+          setAlertColor("success");
+          setAlertMsg("Transfer data successfully deleted !");
+          setAlert(true);
+          const newTransfer = transfer.filter(
+            (item) => item.idtransfer !== data.idtransfer
+          );
+          setTransfer(newTransfer);
+          setOpen(!open);
+          setTimeout(() => {
+            setAlert(false);
+          }, 3000);
+
+          const newStock = stock.map((s) => {
+            if (s.idstock == data.idstock) {
+              return {
+                idstock: s.idstock,
+                idwarehouse: s.idwarehouse,
+                warehouse_name: s.warehouse_name,
+                idproductUnitConversion: s.idproductUnitConversion,
+                iduom: s.iduom,
+                uom: s.uom,
+                idproduct: s.idproduct,
+                code: s.code,
+                product: s.product,
+                qty: s.qty + qty,
+              };
+            }
+            return s;
+          });
+          setStock(newStock);
+        } else {
+          setAlert(true);
+          setAlertColor("failure");
+          setAlertMsg(res);
+          setOpen(!open);
+          setTimeout(() => {
+            setAlert(false);
+          }, 3000);
+        }
+      });
+  };
+  const handleUpdate = async () => {
+    const response = await fetch(
+      `http://localhost:4000/api/transfer/${data.idtransfer}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          qty,
+        }),
+      }
+    );
+
+    const res = await response.json();
+    if (response.ok) {
+      const newTransfer = transfer.map((u) => {
+        if (u.idtransfer === data.idtransfer) {
+          return {
+            idtransfer: data.idtransfer,
+            idstock: data.idstock,
+            idproductUnitConversion: data.idproductUnitConversion,
+            product: data.product,
+            code: data.code,
+            iduom: data.iduom,
+            uom: data.uom,
+            status: data.status,
+            qty: qty,
+            warehouseFrom: data.warehouseFrom,
+            warehouseTo: data.warehouseTo,
+            warehouseToName: data.warehouseToName,
+            warehouseFromName: data.warehouseFromName,
+            created_at: data.created_at,
+          };
+        }
+        return u;
+      });
+      setTransfer(newTransfer);
+      setSelected("");
+      setOpen(!open);
+      setAlertColor("success");
+      setAlertMsg("Transfer data successfully updated !");
+      setAlert(true);
+      setTimeout(() => {
+        setAlert(false);
+      }, 3000);
+    } else {
+      setOpen(!open);
+      setAlert(true);
+      setAlertColor("failure");
+      setAlertMsg(res);
+      setTimeout(() => {
+        setAlert(false);
+      }, 3000);
+    }
+  };
   const handleReceived = async () => {
     const response = await fetch(
-      `http://localhost:4000/api/po/status/${data.idpurchase_order}`,
+      `http://localhost:4000/api/transfer/status/${data.idtransfer}`,
       {
         method: "PUT",
       }
     );
     const res = await response.json();
     if (response.ok) {
-      const newPO = po.map((u) => {
-        if (u.idpurchase_order === data.idpurchase_order) {
+      const newTransfer = transfer.map((u) => {
+        if (u.idtransfer === data.idtransfer) {
           return {
-            idpurchase_order,
-            idvendor,
-            idstock,
-            vendor_name,
-            warehouse_name,
-            product,
-            uom,
-            code,
-            status: "Done",
-            quantity,
-            price,
-            total,
+            idtransfer: data.idtransfer,
+            idstock: data.idstock,
+            idproductUnitConversion: data.idproductUnitConversion,
+            product: data.product,
+            code: data.code,
+            iduom: data.iduom,
+            uom: data.uom,
+            qty: data.qty,
+            status: "Received",
+            warehouseFrom: data.warehouseFrom,
+            warehouseTo: data.warehouseTo,
+            warehouseToName: data.warehouseToName,
+            warehouseFromName: data.warehouseFromName,
+            created_at: data.created_at,
           };
         }
         return u;
@@ -93,109 +179,17 @@ const POPopup = ({
             idproduct: data.idproduct,
             code: data.code,
             product: data.product,
-            qty: res.qty,
+            qty: s.qty - qty,
           };
         }
         return s;
       });
       setStock(newStock);
-      setPO(newPO);
+      setTransfer(newTransfer);
       setSelected("");
       setOpen(!open);
       setAlertColor("success");
-      setAlertMsg("Purchase Order item successfully received !");
-      setAlert(true);
-      setTimeout(() => {
-        setAlert(false);
-      }, 3000);
-    } else {
-      setOpen(!open);
-      setAlert(true);
-      setAlertColor("failure");
-      setAlertMsg(res);
-      setTimeout(() => {
-        setAlert(false);
-      }, 3000);
-    }
-  };
-
-  const handleDelete = async () => {
-    const response = await fetch(
-      `http://localhost:4000/api/po/${data.idpurchase_order}`,
-      {
-        method: "DELETE",
-      }
-    );
-    const res = await response.json();
-    if (response.ok) {
-      const newPO = po.filter(
-        (item) => item.idpurchase_order !== data.idpurchase_order
-      );
-
-      setPO(newPO);
-      setAlertColor("success");
-      setAlertMsg("Purchase Order data successfully deleted !");
-      setAlert(true);
-      setTimeout(() => {
-        setAlert(false);
-      }, 3000);
-      setSelected("");
-      setOpen(!open);
-    } else {
-      setOpen(!open);
-      setAlert(true);
-      setAlertColor("failure");
-      setAlertMsg(res);
-      setTimeout(() => {
-        setAlert(false);
-      }, 3000);
-    }
-  };
-  const handleUpdate = async () => {
-    const response = await fetch(
-      `http://localhost:4000/api/po/${data.idpurchase_order}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          idvendor,
-          idstock,
-          status,
-          quantity,
-          price,
-          total,
-        }),
-      }
-    );
-
-    const res = await response.json();
-    if (response.ok) {
-      const newPO = po.map((u) => {
-        if (u.idpurchase_order === data.idpurchase_order) {
-          return {
-            idpurchase_order,
-            idvendor,
-            idstock,
-            vendor_name,
-            warehouse_name,
-            product,
-            uom,
-            code,
-            status,
-            quantity,
-            price,
-            total,
-          };
-        }
-        return u;
-      });
-      setPO(newPO);
-      setSelected("");
-      setOpen(!open);
-      setAlertColor("success");
-      setAlertMsg("Purchase Order data successfully updated !");
+      setAlertMsg("Transfer item successfully received !");
       setAlert(true);
       setTimeout(() => {
         setAlert(false);
@@ -226,10 +220,6 @@ const POPopup = ({
     };
   }, [open]);
 
-  useEffect(() => {
-    setTotal(quantity * price);
-  }, [price, quantity]);
-
   const handleChildClick = (e) => {
     e.stopPropagation();
   };
@@ -244,13 +234,13 @@ const POPopup = ({
       >
         <div className="flex h-10 justify-between mb-2">
           <h1 className="text-center text-xl font-bold mb-9">
-            Purchase Order Detail
+            Transfer Detail
           </h1>
-          <Tag
+          {/* <Tag
             value={data.status}
             className="mb-2"
             severity={getSeverity(data)}
-          ></Tag>
+          ></Tag> */}
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -258,14 +248,14 @@ const POPopup = ({
               for="name"
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >
-              ID PO
+              ID Transfer
             </label>
             <input
               type="text"
               id="name"
               class="bg-gray-50 border mb-2 border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               required
-              value={data.idpurchase_order}
+              value={data.idtransfer}
               disabled
             />
           </div>
@@ -275,27 +265,11 @@ const POPopup = ({
               for="product"
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >
-              Warehouse
-            </label>
-            <input
-              type="text"
-              id="product"
-              disabled
-              class="bg-gray-50 border mb-2 border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              required
-              value={data.warehouse_name}
-            />
-          </div>
-          <div>
-            <label
-              for="code"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
               Product
             </label>
             <input
               type="text"
-              id="code"
+              id="product"
               disabled
               class="bg-gray-50 border mb-2 border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               required
@@ -320,88 +294,27 @@ const POPopup = ({
           </div>
           <div>
             <label
-              for="uom"
+              for="code"
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >
               UOM
             </label>
             <input
               type="text"
-              id="uom"
+              id="code"
               disabled
               class="bg-gray-50 border mb-2 border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               required
               value={data.uom}
             />
           </div>
-          <div>
-            <label
-              for="uom"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Vendor
-            </label>
 
-            <Select
-              id="vendor"
-              options={options_vendor}
-              isDisabled={data.status == "Done" && true}
-              classNamePrefix="select2-selection"
-              onChange={(e) => {
-                setIdVendor(e.value);
-                setVendorName(e.label);
-              }}
-              required
-              defaultValue={options_vendor.find(
-                (option) => option.value == data.idvendor
-              )}
-              className="focus:ring-black focus:border-black"
-            ></Select>
-          </div>
-          <div>
-            <label
-              for="qty"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Qty
-            </label>
-            <input
-              type="number"
-              id="qty"
-              disabled={data.status == "Done" && true}
-              class="bg-gray-50 border mb-2 border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              required
-              value={quantity}
-              onChange={(e) => {
-                setQty(e.target.value);
-              }}
-            />
-          </div>
-          <div>
-            <label
-              for="price"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Price
-            </label>
-            <input
-              type="number"
-              id="price"
-              disabled={data.status == "Done" && true}
-              class="bg-gray-50 border mb-2 border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              required
-              value={price}
-              onChange={(e) => {
-                setPrice(e.target.value);
-              }}
-            />
-          </div>
           <div>
             <label
               for="uom"
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >
-              Total
+              Warehouse From
             </label>
             <input
               type="text"
@@ -409,9 +322,41 @@ const POPopup = ({
               disabled
               class="bg-gray-50 border mb-2 border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               required
-              value={total}
+              value={data.warehouseFrom}
+            />
+          </div>
+          <div>
+            <label
+              for="uom"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
+              Warehouse From
+            </label>
+            <input
+              type="text"
+              id="uom"
+              disabled
+              class="bg-gray-50 border mb-2 border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              required
+              value={data.warehouseTo}
+            />
+          </div>
+          <div>
+            <label
+              for="uom"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
+              Qty
+            </label>
+            <input
+              type="text"
+              id="uom"
+              class="bg-gray-50 border mb-2 border-gray-300 text-gray-900 text-sm rounded-lg  focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              required
+              value={qty}
               onChange={(e) => {
-                setTotal(e.target.value);
+                setQty(e.target.value);
+                setQtyDiff(parseInt(data.qty) - e.target.value);
               }}
             />
           </div>
@@ -423,20 +368,20 @@ const POPopup = ({
             severity="danger"
             size="small"
             onClick={handleDelete}
-            disabled={data.status == "Done" && true}
+            disabled={data.status == "Received" && true}
           />
           <Button
             label="Update"
             severity="success"
             size="small"
-            disabled={data.status == "Done" && true}
+            disabled={data.status == "Received" && true}
             onClick={handleUpdate}
           />
           <Button
             label="Received"
             severity="warning"
             size="small"
-            disabled={data.status == "Done" && true}
+            disabled={data.status == "Received" && true}
             onClick={handleReceived}
           />
         </div>
@@ -445,4 +390,4 @@ const POPopup = ({
   );
 };
 
-export default POPopup;
+export default TransferPopup;

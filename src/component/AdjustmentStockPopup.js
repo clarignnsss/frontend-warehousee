@@ -89,6 +89,12 @@ const AdjustmentStockPopup = ({
         >
           <Column field="idstock" header="ID" sortable></Column>
           <Column field="warehouse_name" header="Warehouse" sortable></Column>
+          <Column
+            field="idwarehouse"
+            header="WarehouseID"
+            sortable
+            hidden
+          ></Column>
           <Column field="product" header="Product" sortable></Column>
           <Column field="code" header="Code" sortable></Column>
           <Column field="uom" header="Uom" sortable></Column>

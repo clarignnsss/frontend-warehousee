@@ -41,6 +41,8 @@ import VendorView from "./component/VendorView";
 import Vendor from "./component/Vendor";
 import POView from "./component/POView";
 import PO from "./component/PO";
+import TransferView from "./component/TransferView";
+import Transfer from "./component/Transfer";
 
 function App() {
   return (
@@ -88,6 +90,8 @@ function App() {
                   <Route path="addvendor" element={<Vendor />} />
                   <Route path="poview" element={<POView />} />
                   <Route path="addpo" element={<PO />} />
+                  <Route path="transferview" element={<TransferView />} />
+                  <Route path="addtransfer" element={<Transfer />} />
                 </Route>
               </Route>
             </Routes>

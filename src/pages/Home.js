@@ -25,6 +25,7 @@ import { StockContextProvider } from "../context/StockContext";
 import { AdjustmentContextProvider } from "../context/AdjustmentContext";
 import { VendorContextProvider } from "../context/VendorContext";
 import { POContextProvider } from "../context/PoContext";
+import { TransferContextProvider } from "../context/TransferContext";
 
 const Home = () => {
   const { setUserInfo, userInfo } = useContext(UserContext);
@@ -33,13 +34,15 @@ const Home = () => {
   const nav = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/users/profile", {
-      credentials: "include",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setUserInfo(data);
-      });
+    try {
+      fetch("http://localhost:4000/api/users/profile", {
+        credentials: "include",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setUserInfo(data);
+        });
+    } catch (error) {}
   }, []);
 
   useEffect(() => {
@@ -75,20 +78,22 @@ const Home = () => {
                                 <AdjustmentContextProvider>
                                   <VendorContextProvider>
                                     <POContextProvider>
-                                      <div className="md:flex relative">
-                                        <div className="w-72 overflow-y-scroll h-screen  bg-black">
-                                          <Sidebar
-                                            isOpen={isSidebarOpen}
-                                            setIsOpen={handleSidebarToggle}
-                                          ></Sidebar>
+                                      <TransferContextProvider>
+                                        <div className="md:flex relative">
+                                          <div className="w-72 overflow-y-scroll h-screen  bg-black">
+                                            <Sidebar
+                                              isOpen={isSidebarOpen}
+                                              setIsOpen={handleSidebarToggle}
+                                            ></Sidebar>
+                                          </div>
+                                          <div className="w-full drop-shadow bg-gray-300">
+                                            <Menu
+                                              handleClick={handleSidebarToggle}
+                                            ></Menu>
+                                            <Outlet></Outlet>
+                                          </div>
                                         </div>
-                                        <div className="w-full drop-shadow bg-gray-300">
-                                          <Menu
-                                            handleClick={handleSidebarToggle}
-                                          ></Menu>
-                                          <Outlet></Outlet>
-                                        </div>
-                                      </div>
+                                      </TransferContextProvider>
                                     </POContextProvider>
                                   </VendorContextProvider>
                                 </AdjustmentContextProvider>

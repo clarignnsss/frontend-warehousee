@@ -1,6 +1,9 @@
 import React, { useState, useContext } from "react";
 import { Alert } from "flowbite-react";
 import { ProvinceContext } from "../context/ProvinceContext.js";
+import { UserContext } from "../context/UserContext.js";
+import { BiArrowBack } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
 
 const Province = () => {
   const [provinceValue, setProvinceValue] = useState("");
@@ -8,11 +11,20 @@ const Province = () => {
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState("");
   const [alertMsg, setAlertMsg] = useState("");
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
+
+  const history = useNavigate();
+
+  const goBack = () => {
+    history(-1);
+  };
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
     const newProvince = {
       provinceName: provinceValue,
+      created_by: username,
     };
     const response = fetch("http://localhost:4000/api/province", {
       method: "POST",
@@ -32,6 +44,15 @@ const Province = () => {
       })
       .then((result) => {
         console.log(result);
+        const id = result["insertId"];
+        fetch(`http://localhost:4000/api/province/${id}`)
+          .then((res) => {
+            return res.json();
+          })
+          .then((result) => {
+            console.log(result);
+            setProvince([...province, ...result]);
+          });
         setAlert(true);
         if (result.protocol41) {
           setAlertColor("success");
@@ -53,6 +74,12 @@ const Province = () => {
   return (
     <>
       <div className="px-4 md:h-[650px] md:overflow-y-scroll">
+        <span className="py-3 block cursor-pointer " onClick={goBack}>
+          <BiArrowBack
+            className="w-12 h-12 bg-[#ffff] hover:bg-[#d7d6d6] rounded-full p-3
+        "
+          />
+        </span>
         <div className="py-4 text-center text-[#2C4856] font-extrabold text-2xl">
           Province
         </div>

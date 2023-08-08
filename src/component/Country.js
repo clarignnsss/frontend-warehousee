@@ -2,6 +2,9 @@ import React, { useState, useContext, useEffect } from "react";
 import { Alert } from "flowbite-react";
 import { CountryContext } from "../context/CountryContext.js";
 import { TitleContext } from "../context/TitleContext.js";
+import { UserContext } from "../context/UserContext.js";
+import { BiArrowBack } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
 
 const Country = () => {
   const { setTitle } = useContext(TitleContext);
@@ -10,15 +13,24 @@ const Country = () => {
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState("");
   const [alertMsg, setAlertMsg] = useState("");
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
+  const [user, setUser] = useState(username);
 
   useEffect(() => {
     setTitle("Master Data");
   });
+  const history = useNavigate();
+
+  const goBack = () => {
+    history(-1);
+  };
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
     const newCountry = {
       countryName: countryValue,
+      created_by: user,
     };
     const response = fetch("http://localhost:4000/api/country", {
       method: "POST",
@@ -38,6 +50,15 @@ const Country = () => {
       })
       .then((result) => {
         console.log(result);
+        const id = result["insertId"];
+        fetch(`http://localhost:4000/api/country/${id}`)
+          .then((res) => {
+            return res.json();
+          })
+          .then((result) => {
+            console.log(result);
+            setCountry([...country, ...result]);
+          });
         setAlert(true);
         if (result.protocol41) {
           setAlertColor("success");
@@ -59,6 +80,12 @@ const Country = () => {
   return (
     <>
       <div className="px-4 md:h-[650px] md:overflow-y-scroll">
+        <span className="py-3 block cursor-pointer " onClick={goBack}>
+          <BiArrowBack
+            className="w-12 h-12 bg-[#ffff] hover:bg-[#d7d6d6] rounded-full p-3
+        "
+          />
+        </span>
         <div className="py-4 text-center text-[#2C4856] font-extrabold text-2xl">
           Country
         </div>

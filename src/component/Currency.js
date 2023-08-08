@@ -1,6 +1,9 @@
 import React, { useState, useContext } from "react";
 import { Alert } from "flowbite-react";
 import { CurrencyContext } from "../context/currencyContext";
+import { UserContext } from "../context/UserContext";
+import { BiArrowBack } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
 const Currency = () => {
   const { currency, setCurrency } = useContext(CurrencyContext);
   const [currencyCode, setCurrencyCode] = useState("");
@@ -8,11 +11,20 @@ const Currency = () => {
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState("");
   const [alertMsg, setAlertMsg] = useState("");
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
+
+  const history = useNavigate();
+
+  const goBack = () => {
+    history(-1);
+  };
   const handleSubmit = async (evt) => {
     evt.preventDefault();
     const newCurrency = {
       currency_code: currencyCode,
       currency_name: currencyName,
+      created_by: username,
     };
     const response = fetch("http://localhost:4000/api/currency", {
       method: "POST",
@@ -32,10 +44,19 @@ const Currency = () => {
       })
       .then((result) => {
         console.log(result);
+        const id = result["insertId"];
+        fetch(`http://localhost:4000/api/currency/${id}`)
+          .then((res) => {
+            return res.json();
+          })
+          .then((result) => {
+            console.log(result);
+            setCurrency([...currency, ...result]);
+          });
         setAlert(true);
         if (result.protocol41) {
           setAlertColor("success");
-          setAlertMsg("Company data successfully submitted !");
+          setAlertMsg("Currency data successfully submitted !");
           setCurrency([...currency, newCurrency]);
         } else {
           setAlertColor("failure");
@@ -54,6 +75,12 @@ const Currency = () => {
   return (
     <>
       <div className="px-4 md:h-[650px] md:overflow-y-scroll">
+        <span className="py-3 block cursor-pointer " onClick={goBack}>
+          <BiArrowBack
+            className="w-12 h-12 bg-[#ffff] hover:bg-[#d7d6d6] rounded-full p-3
+        "
+          />
+        </span>
         <div className="py-4 text-center text-[#2C4856] font-extrabold text-2xl">
           Currency
         </div>

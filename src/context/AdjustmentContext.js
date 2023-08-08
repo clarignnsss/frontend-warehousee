@@ -6,11 +6,13 @@ export function AdjustmentContextProvider({ children }) {
   const [adjustment, setAdjustment] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/adjustment")
-      .then((res) => {
-        return res.json();
-      })
-      .then((result) => setAdjustment(result));
+    try {
+      fetch("http://localhost:4000/api/adjustment")
+        .then((res) => {
+          return res.json();
+        })
+        .then((result) => setAdjustment(result));
+    } catch (error) {}
   }, []);
 
   return (

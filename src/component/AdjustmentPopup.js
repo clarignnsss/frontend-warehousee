@@ -166,7 +166,9 @@ const AdjustmentPopup = ({
         className="bg-white p-8 w-80  rounded-lg"
         onClick={(e) => handleChildClick(e)}
       >
-        <h1 className="text-center text-lg font-bold mb-9">Stock Detail</h1>
+        <h1 className="text-center text-lg font-bold mb-9">
+          Adjustment Detail
+        </h1>
         <div>
           <label
             for="name"

@@ -4,6 +4,7 @@ import { CurrencyContext } from "../context/currencyContext";
 import { CountryContext } from "../context/CountryContext";
 import { ProvinceContext } from "../context/ProvinceContext";
 import { CompanyContext } from "../context/CompanyContext";
+import { UserContext } from "../context/UserContext";
 import { CityContext } from "../context/CityContext";
 import { Alert } from "flowbite-react";
 
@@ -16,6 +17,8 @@ const Company = () => {
   const { country } = useContext(CountryContext);
   const { province } = useContext(ProvinceContext);
   const { city } = useContext(CityContext);
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
   const [resetSelect, setResetSelect] = useState();
   const [currencyCode, setCurrencyCode] = useState();
   const [currencyName, setCurrencyName] = useState();
@@ -71,6 +74,7 @@ const Company = () => {
       idcountry: countryValue,
       idprovince: provinceValue,
       idcity: cityValue,
+      created_by: username,
     };
     const response = fetch("http://localhost:4000/api/company", {
       method: "POST",

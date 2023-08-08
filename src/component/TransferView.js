@@ -1,33 +1,50 @@
 import React, { useState, useContext, useEffect } from "react";
+import { TitleContext } from "../context/TitleContext.js";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+import { Alert } from "flowbite-react";
 import { FilterMatchMode } from "primereact/api";
 import { InputText } from "primereact/inputtext";
-import { CountryContext } from "../context/CountryContext";
 import { RiAddFill } from "react-icons/ri";
 import { Link } from "react-router-dom";
-import { Alert } from "flowbite-react";
-import { TitleContext } from "../context/TitleContext";
-import CountryPopup from "./CountryPopup";
+import { TransferContext } from "../context/TransferContext.js";
+import { Tag } from "primereact/tag";
+import TransferPopup from "./TransferPopup.js";
 
-const CountryView = () => {
-  const { setTitle } = useContext(TitleContext);
-  const { country } = useContext(CountryContext);
+const TransferView = () => {
+  useEffect(() => {
+    setTitle("Transfer");
+  });
   const [selected, setSelected] = useState("");
   const [open, setOpen] = useState(false);
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState("");
   const [alertMsg, setAlertMsg] = useState("");
+  const { setTitle } = useContext(TitleContext);
+  const { transfer } = useContext(TransferContext);
   const [filter, setFilter] = useState({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
-  useEffect(() => {
-    setTitle("Master Data");
-  });
+  const statusBodyTemplate = (transfer) => {
+    return <Tag value={transfer.status} severity={getSeverity(transfer)}></Tag>;
+  };
+
+  const getSeverity = (transfer) => {
+    switch (transfer.status) {
+      case "WIP":
+        return "warning";
+
+      case "Received":
+        return "success";
+
+      default:
+        return null;
+    }
+  };
   return (
     <div className="px-4 py-4">
       {open && (
-        <CountryPopup
+        <TransferPopup
           data={selected}
           setSelected={setSelected}
           setOpen={setOpen}
@@ -83,7 +100,7 @@ const CountryView = () => {
           }}
           placeholder="Search.."
         />
-        <Link to="/home/addcountry">
+        <Link to="/home/addtransfer">
           <button
             type="button"
             className="text-[#2C4856] bg-[#ffff] hover:bg-[#d7d6d6] focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
@@ -94,37 +111,38 @@ const CountryView = () => {
       </div>
 
       <DataTable
-        value={country}
+        value={transfer}
         filters={filter}
         className="mt-5"
         sortMode="multiple"
         paginator
         rows={5}
-        totalRecords={country.length}
+        totalRecords={transfer.length}
         removableSort
         selectionMode="single"
-        dataKey="idcountry"
+        dataKey="idtransfer"
         selection={selected}
         onSelectionChange={(e) => {
           setSelected(e.value);
         }}
         onDoubleClick={() => setOpen(!open)}
-       
       >
-        {/* <Column field="idcountry" header="ID" sortable></Column> */}
+        <Column body={statusBodyTemplate} header="Status" sortable></Column>
+        <Column field="idtransfer" header="ID" sortable></Column>
+        <Column field="product" header="Product" sortable></Column>
+        <Column field="code" header="Code" sortable></Column>
+        <Column field="uom" header="UOM" sortable></Column>
+        <Column field="qty" header="Qty" sortable></Column>
         <Column
-          field="document_number"
-          header="Country Number"
+          field="warehouseFromName"
+          header="warehouse From"
           sortable
         ></Column>
-        <Column field="countryName" header="Country" sortable></Column>
+        <Column field="warehouseToName" header="warehouse To" sortable></Column>
         <Column field="created_at" header="Created At" sortable></Column>
-        <Column field="created_by" header="Created By" sortable></Column>
-        <Column field="modified_at" header="Modified At" sortable></Column>
-        <Column field="modified_by" header="Modified By" sortable></Column>
       </DataTable>
     </div>
   );
 };
 
-export default CountryView;
+export default TransferView;

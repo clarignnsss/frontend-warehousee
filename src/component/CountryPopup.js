@@ -1,19 +1,25 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Alert } from "flowbite-react";
-import { CityContext } from "../context/CityContext.js";
-import { UserContext } from "../context/UserContext";
+import { CountryContext } from "../context/CountryContext.js";
+import { TitleContext } from "../context/TitleContext.js";
+import { UserContext } from "../context/UserContext.js";
 import { BiArrowBack } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 
-const City = () => {
-  const [cityValue, setCityValue] = useState("");
-  const { city, setCity } = useContext(CityContext);
+const Country = () => {
+  const { setTitle } = useContext(TitleContext);
+  const [countryValue, setCountryValue] = useState("");
+  const { country, setCountry } = useContext(CountryContext);
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState("");
   const [alertMsg, setAlertMsg] = useState("");
   const { userInfo } = useContext(UserContext);
   const username = userInfo?.username;
+  const [user, setUser] = useState(username);
 
+  useEffect(() => {
+    setTitle("Master Data");
+  });
   const history = useNavigate();
 
   const goBack = () => {
@@ -22,17 +28,17 @@ const City = () => {
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
-    const newCity = {
-      cityName: cityValue,
-      created_by: username,
+    const newCountry = {
+      countryName: countryValue,
+      created_by: user,
     };
-    const response = fetch("http://localhost:4000/api/city", {
+    const response = fetch("http://localhost:4000/api/country", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ...newCity,
+        ...newCountry,
       }),
     });
     response
@@ -43,25 +49,27 @@ const City = () => {
         return res.json();
       })
       .then((result) => {
+        console.log(result);
         const id = result["insertId"];
-        fetch(`http://localhost:4000/api/city/${id}`)
+        fetch(`http://localhost:4000/api/country/${id}`)
           .then((res) => {
             return res.json();
           })
           .then((result) => {
             console.log(result);
-            setCity([...city, ...result]);
+            setCountry([...country, ...result]);
           });
         setAlert(true);
         if (result.protocol41) {
           setAlertColor("success");
-          setAlertMsg("City data successfully submitted !");
+          setAlertMsg("Country data successfully submitted !");
+          setCountry([...country, newCountry]);
         } else {
           setAlertColor("failure");
           setAlertMsg(result);
         }
 
-        setCityValue("");
+        setCountryValue("");
         setTimeout(() => {
           setAlert(false);
         }, 3000);
@@ -79,7 +87,7 @@ const City = () => {
           />
         </span>
         <div className="py-4 text-center text-[#2C4856] font-extrabold text-2xl">
-          City
+          Country
         </div>
         {alert ? (
           <Alert color={`${alertColor}`} className="mb-3">
@@ -115,23 +123,23 @@ const City = () => {
           ""
         )}
 
-        <form onSubmit={handleSubmit} className="mb-10">
+        <form onSubmit={handleSubmit}>
           <div class="grid gap-6 mb-6 md:grid-cols-2">
             <div>
               <label
-                for="city"
+                for="country"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
-                City Name
+                Country Name
               </label>
               <input
                 type="text"
-                id="city"
+                id="country"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-black focus:border-black block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
-                placeholder="Ex: Solo"
+                placeholder="Ex: Rupiah"
                 required
-                value={cityValue}
-                onChange={(e) => setCityValue(e.target.value)}
+                value={countryValue}
+                onChange={(e) => setCountryValue(e.target.value)}
               />
             </div>
           </div>
@@ -148,4 +156,4 @@ const City = () => {
   );
 };
 
-export default City;
+export default Country;
