@@ -2,10 +2,12 @@ import React, { useEffect, useState, useContext } from "react";
 import { TitleContext } from "../context/TitleContext";
 import { Alert } from "flowbite-react";
 import { ProductContext } from "../context/ProductContext";
-import { Navigate } from "react-router-dom";
+import { UserContext } from "../context/UserContext";
 const Product = () => {
   const { setTitle } = useContext(TitleContext);
   const { product, setProduct } = useContext(ProductContext);
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
   const [code, setCode] = useState();
   const [Name, setName] = useState();
   const [alert, setAlert] = useState(false);
@@ -20,6 +22,7 @@ const Product = () => {
     const newProduct = {
       code,
       name: Name,
+      created_by: username,
     };
     const response = fetch("http://localhost:4000/api/product", {
       method: "POST",

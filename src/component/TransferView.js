@@ -128,7 +128,11 @@ const TransferView = () => {
         onDoubleClick={() => setOpen(!open)}
       >
         <Column body={statusBodyTemplate} header="Status" sortable></Column>
-        <Column field="idtransfer" header="ID" sortable></Column>
+        <Column
+          field="document_number"
+          header="Transfer Document"
+          sortable
+        ></Column>
         <Column field="product" header="Product" sortable></Column>
         <Column field="code" header="Code" sortable></Column>
         <Column field="uom" header="UOM" sortable></Column>
@@ -140,6 +144,9 @@ const TransferView = () => {
         ></Column>
         <Column field="warehouseToName" header="warehouse To" sortable></Column>
         <Column field="created_at" header="Created At" sortable></Column>
+        <Column field="created_by" header="Created By" sortable></Column>
+        <Column field="modified_at" header="Modified At" sortable></Column>
+        <Column field="modified_by" header="Modified By" sortable></Column>
       </DataTable>
     </div>
   );

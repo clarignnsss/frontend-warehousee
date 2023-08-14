@@ -5,6 +5,7 @@ import { Alert } from "flowbite-react";
 import Select from "react-select";
 import { ProductContext } from "../context/ProductContext";
 import { AttrValueContext } from "../context/AttrValueContext";
+import { UserContext } from "../context/UserContext";
 
 const ProductAttribute = () => {
   const { title, setTitle } = useContext(TitleContext);
@@ -16,6 +17,8 @@ const ProductAttribute = () => {
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState(false);
   const [alertMsg, setAlertMsg] = useState(false);
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
 
   const options = attrvalue
     ? attrvalue.map((c) => ({
@@ -48,6 +51,7 @@ const ProductAttribute = () => {
     const newAttrValue = {
       idproduct: IdProduct,
       idattrvalue: IdAttrValue,
+      created_by: username,
     };
     console.log(newAttrValue);
     const response = fetch("http://localhost:4000/api/productattr", {

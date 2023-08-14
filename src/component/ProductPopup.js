@@ -1,17 +1,28 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { ProductContext } from "../context/ProductContext";
-import Select from "react-select";
 import { Button } from "primereact/button";
+import { UserContext } from "../context/UserContext";
 
-const ProductPopup = ({ data, setOpen, open }) => {
+const ProductPopup = ({ data, setOpen, open, setSelected }) => {
   const { product, setProduct } = useContext(ProductContext);
   const [code, setCode] = useState(data.code);
   const [Name, setName] = useState(data.name);
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
+  const current_date = new Date();
+  const year = current_date.getFullYear();
+  const month = (current_date.getMonth() + 1).toString().padStart(2, "0");
+  const day = current_date.getDate().toString().padStart(2, "0");
+  const hours = current_date.getHours().toString().padStart(2, "0");
+  const minutes = current_date.getMinutes().toString().padStart(2, "0");
+  const seconds = current_date.getSeconds().toString().padStart(2, "0");
+  const sqlDatetime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   const popup = useRef();
 
   const payload = {
     code,
     name: Name,
+    modified_by: username,
   };
 
   const handleDelete = async () => {
@@ -46,8 +57,14 @@ const ProductPopup = ({ data, setOpen, open }) => {
         if (u.idproduct === data.idproduct) {
           return {
             idproduct: data.idproduct,
+            document_number: data.document_number,
             code,
             name: Name,
+            modified_at: sqlDatetime,
+            modified_by: username,
+            created_at: data.created_at,
+            created_by: data.created_by,
+            document_number: data.document_number,
           }; // update matching customer object
         }
         return u; // keep other customer objects unchanged
@@ -55,6 +72,7 @@ const ProductPopup = ({ data, setOpen, open }) => {
       setProduct(newProduct);
       console.log(newProduct);
       setOpen(!open);
+      setSelected("");
     }
   };
   useEffect(() => {

@@ -120,7 +120,7 @@ const POView = () => {
         className="mt-5"
         sortMode="multiple"
         paginator
-        rows={5}
+        rows={10}
         totalRecords={po.length}
         removableSort
         selectionMode="single"
@@ -131,7 +131,11 @@ const POView = () => {
         }}
         onDoubleClick={() => setOpen(!open)}
       >
-        <Column field="idpurchase_order" header="ID" sortable></Column>
+        <Column
+          field="document_number"
+          header="Purchase Order Number"
+          sortable
+        ></Column>
         <Column body={statusBodyTemplate} header="Status" sortable></Column>
         <Column field="warehouse_name" header="Warehouse" sortable></Column>
         <Column field="product" header="Product" sortable></Column>
@@ -141,6 +145,10 @@ const POView = () => {
         <Column field="quantity" header="Qty" sortable></Column>
         <Column field="price" header="Price" sortable></Column>
         <Column field="total" header="Total" sortable></Column>
+        <Column field="created_at" header="Created At" sortable></Column>
+        <Column field="created_by" header="Created By" sortable></Column>
+        <Column field="modified_at" header="Modified At" sortable></Column>
+        <Column field="modified_by" header="Modified By" sortable></Column>
         <Column field="idstock" header="idstock" sortable hidden></Column>
       </DataTable>
     </div>

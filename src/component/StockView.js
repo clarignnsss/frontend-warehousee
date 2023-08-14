@@ -112,12 +112,16 @@ const StockView = () => {
         }}
         onDoubleClick={() => setOpen(!open)}
       >
-        <Column field="idstock" header="ID" sortable></Column>
+        <Column field="document_number" header="Stock Number" sortable></Column>
         <Column field="warehouse_name" header="Warehouse" sortable></Column>
         <Column field="product" header="Product" sortable></Column>
         <Column field="code" header="Code" sortable></Column>
         <Column field="uom" header="Uom" sortable></Column>
         <Column field="qty" header="Qty" sortable></Column>
+        <Column field="created_at" header="Created At" sortable></Column>
+        <Column field="created_by" header="Created By" sortable></Column>
+        <Column field="modified_at" header="Modified At" sortable></Column>
+        <Column field="modified_by" header="Modified By" sortable></Column>
       </DataTable>
     </div>
   );

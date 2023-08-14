@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import { Button } from "primereact/button";
 import { TransferContext } from "../context/TransferContext";
 import { StockContext } from "../context/StockContext";
+import { UserContext } from "../context/UserContext";
 
 const TransferPopup = ({
   data,
@@ -20,8 +21,18 @@ const TransferPopup = ({
   const [uom, setUom] = useState(data.uom);
   const [qty, setQty] = useState(data.qty);
   const [qtyDiff, setQtyDiff] = useState(0);
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
   const [warehouseFrom, setWarehouseTo] = useState(data.warehouseFrom);
   const [warehouseTo, setWarehouseFrom] = useState(data.warehouseTo);
+  const current_date = new Date();
+  const year = current_date.getFullYear();
+  const month = (current_date.getMonth() + 1).toString().padStart(2, "0");
+  const day = current_date.getDate().toString().padStart(2, "0");
+  const hours = current_date.getHours().toString().padStart(2, "0");
+  const minutes = current_date.getMinutes().toString().padStart(2, "0");
+  const seconds = current_date.getSeconds().toString().padStart(2, "0");
+  const sqlDatetime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
   const popup = useRef();
 
@@ -65,6 +76,11 @@ const TransferPopup = ({
                 code: s.code,
                 product: s.product,
                 qty: s.qty + qty,
+                created_at: s.created_at,
+                created_by: s.created_by,
+                modified_at: sqlDatetime,
+                modified_by: s.modified_by,
+                document_number: s.document_number,
               };
             }
             return s;
@@ -91,6 +107,7 @@ const TransferPopup = ({
         },
         body: JSON.stringify({
           qty,
+          modified_by: username,
         }),
       }
     );
@@ -114,6 +131,10 @@ const TransferPopup = ({
             warehouseToName: data.warehouseToName,
             warehouseFromName: data.warehouseFromName,
             created_at: data.created_at,
+            created_by: data.created_by,
+            modified_at: sqlDatetime,
+            modified_by: username,
+            document_number: data.document_number,
           };
         }
         return u;
@@ -142,6 +163,12 @@ const TransferPopup = ({
       `http://localhost:4000/api/transfer/status/${data.idtransfer}`,
       {
         method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          modified_by: username,
+        }),
       }
     );
     const res = await response.json();
@@ -163,6 +190,10 @@ const TransferPopup = ({
             warehouseToName: data.warehouseToName,
             warehouseFromName: data.warehouseFromName,
             created_at: data.created_at,
+            created_by: data.created_by,
+            modified_at: sqlDatetime,
+            modified_by: data.modified_by,
+            document_number: data.document_number,
           };
         }
         return u;
@@ -172,7 +203,7 @@ const TransferPopup = ({
           return {
             idstock: data.idstock,
             idwarehouse: data.idwarehouse,
-            warehouse_name: data.warehouse_name,
+            warehouse_name: s.warehouse_name,
             idproductUnitConversion: data.idproductUnitConversion,
             iduom: data.iduom,
             uom: data.uom,
@@ -180,6 +211,11 @@ const TransferPopup = ({
             code: data.code,
             product: data.product,
             qty: s.qty - qty,
+            created_at: s.created_at,
+            created_by: s.created_by,
+            modified_at: sqlDatetime,
+            modified_by: s.modified_by,
+            document_number: s.document_number,
           };
         }
         return s;

@@ -3,6 +3,7 @@ import { AdjustmentContext } from "../context/AdjustmentContext";
 import { StockContext } from "../context/StockContext";
 import { Button } from "primereact/button";
 import { VendorContext } from "../context/VendorContext";
+import { UserContext } from "../context/UserContext";
 
 const VendorPopup = ({
   data,
@@ -19,6 +20,16 @@ const VendorPopup = ({
   const [contact_person, setCP] = useState(data.contact_person);
   const [contact_number, setCN] = useState(data.contact_number);
   const [email, setEmail] = useState(data.email);
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
+  const current_date = new Date();
+  const year = current_date.getFullYear();
+  const month = (current_date.getMonth() + 1).toString().padStart(2, "0");
+  const day = current_date.getDate().toString().padStart(2, "0");
+  const hours = current_date.getHours().toString().padStart(2, "0");
+  const minutes = current_date.getMinutes().toString().padStart(2, "0");
+  const seconds = current_date.getSeconds().toString().padStart(2, "0");
+  const sqlDatetime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
   const popup = useRef();
 
@@ -73,6 +84,7 @@ const VendorPopup = ({
           contact_person,
           contact_number,
           email,
+          modified_by: username,
         }),
       }
     );
@@ -88,6 +100,11 @@ const VendorPopup = ({
             contact_person,
             contact_number,
             email,
+            modified_at: sqlDatetime,
+            modified_by: username,
+            created_at: data.created_at,
+            created_by: data.created_by,
+            document_number: data.document_number,
           };
         }
         return u;

@@ -5,6 +5,7 @@ import { Alert } from "flowbite-react";
 import Select from "react-select";
 import { ProductContext } from "../context/ProductContext";
 import { ProductUnitContext } from "../context/ProductUnitContext";
+import { UserContext } from "../context/UserContext";
 
 const ProductUnit = () => {
   const { setTitle } = useContext(TitleContext);
@@ -16,6 +17,8 @@ const ProductUnit = () => {
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState(false);
   const [alertMsg, setAlertMsg] = useState(false);
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
 
   const options_product = product
     ? product.map((c) => ({
@@ -47,6 +50,7 @@ const ProductUnit = () => {
     const newProductUnit = {
       idproduct: ProductId,
       iduom: UomId,
+      created_by: username,
     };
     const response = fetch("http://localhost:4000/api/productunit", {
       method: "POST",

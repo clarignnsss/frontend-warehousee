@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Alert } from "flowbite-react";
 import { AttributeContext } from "../context/AttributeContext";
+import { UserContext } from "../context/UserContext";
 
 const Attribute = () => {
   const [attrName, setAttr] = useState("");
@@ -8,11 +9,14 @@ const Attribute = () => {
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState("");
   const [alertMsg, setAlertMsg] = useState("");
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
 
   const handleSubmit = (evt) => {
     evt.preventDefault();
     const newAttr = {
       attrName,
+      created_by: username,
     };
     const response = fetch("http://localhost:4000/api/attribute", {
       method: "POST",

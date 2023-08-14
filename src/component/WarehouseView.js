@@ -69,8 +69,13 @@ const WarehouseView = () => {
           setSelected(e.value);
         }}
         onDoubleClick={() => setOpen(!open)}
+        
       >
-        <Column field="idwarehouse" header="ID" sortable></Column>
+        <Column
+          field="document_number"
+          header="Warehouse Number"
+          sortable
+        ></Column>
         <Column field="warehouse_name" header="Warehouse" sortable></Column>
         <Column field="address" header="Address" sortable></Column>
         <Column
@@ -84,6 +89,10 @@ const WarehouseView = () => {
           sortable
         ></Column>
         <Column field="status" header="Status" sortable></Column>
+        <Column field="created_at" header="Created At" sortable></Column>
+        <Column field="created_by" header="Created By" sortable></Column>
+        <Column field="modified_at" header="Modified At" sortable></Column>
+        <Column field="modified_by" header="Modified By" sortable></Column>
       </DataTable>
     </div>
   );

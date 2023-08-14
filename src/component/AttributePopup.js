@@ -1,11 +1,21 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { AttributeContext } from "../context/AttributeContext";
 import { Button } from "primereact/button";
-
+import { UserContext } from "../context/UserContext";
 const AttributePopup = ({ data, setOpen, open }) => {
   const [attrName, setAttr] = useState(data.name);
   const { attribute, setAttribute } = useContext(AttributeContext);
   const popup = useRef();
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
+  const current_date = new Date();
+  const year = current_date.getFullYear();
+  const month = (current_date.getMonth() + 1).toString().padStart(2, "0");
+  const day = current_date.getDate().toString().padStart(2, "0");
+  const hours = current_date.getHours().toString().padStart(2, "0");
+  const minutes = current_date.getMinutes().toString().padStart(2, "0");
+  const seconds = current_date.getSeconds().toString().padStart(2, "0");
+  const sqlDatetime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
   const handleDelete = () => {
     const response = fetch(
@@ -34,6 +44,7 @@ const AttributePopup = ({ data, setOpen, open }) => {
         },
         body: JSON.stringify({
           attrName,
+          modified_by: username,
         }),
       }
     );
@@ -44,6 +55,11 @@ const AttributePopup = ({ data, setOpen, open }) => {
           return {
             idattribute: data.idattribute,
             name: attrName,
+            document_number: data.document_number,
+            created_at: data.created_at,
+            created_by: data.created_by,
+            modified_by: username,
+            modified_at: sqlDatetime,
           }; // update matching customer object
         }
         return u; // keep other customer objects unchanged

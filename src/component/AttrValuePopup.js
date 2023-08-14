@@ -3,15 +3,26 @@ import { AttrValueContext } from "../context/AttrValueContext";
 import { AttributeContext } from "../context/AttributeContext";
 import Select from "react-select";
 import { Button } from "primereact/button";
+import { UserContext } from "../context/UserContext";
 
 const AttrValuePopup = ({ data, setOpen, open }) => {
   const [idattribute, setIdAttribute] = useState(data.idattribute);
-  const [attrName, setAttr] = useState();
+  const [attrName, setAttr] = useState(data.attribute);
   const { attribute } = useContext(AttributeContext);
   const [value, setValue] = useState(data.value);
   const [Name, setName] = useState(data.name);
   const { attrvalue, setAttrvalue } = useContext(AttrValueContext);
   const popup = useRef();
+  const { userInfo } = useContext(UserContext);
+  const current_date = new Date();
+  const username = userInfo?.username;
+  const year = current_date.getFullYear();
+  const month = (current_date.getMonth() + 1).toString().padStart(2, "0");
+  const day = current_date.getDate().toString().padStart(2, "0");
+  const hours = current_date.getHours().toString().padStart(2, "0");
+  const minutes = current_date.getMinutes().toString().padStart(2, "0");
+  const seconds = current_date.getSeconds().toString().padStart(2, "0");
+  const sqlDatetime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
   const options = attribute
     ? attribute.map((c) => ({
@@ -48,6 +59,7 @@ const AttrValuePopup = ({ data, setOpen, open }) => {
           name: Name,
           idattr: idattribute,
           value,
+          modified_by: username,
         }),
       }
     );
@@ -60,6 +72,11 @@ const AttrValuePopup = ({ data, setOpen, open }) => {
             name: Name,
             attribute: attrName,
             value,
+            created_at: data.created_at,
+            created_by: data.created_by,
+            document_number: data.document_number,
+            modified_at: sqlDatetime,
+            modified_by: username,
           }; // update matching customer object
         }
         return u; // keep other customer objects unchanged
@@ -132,9 +149,11 @@ const AttrValuePopup = ({ data, setOpen, open }) => {
             onChange={(e) => {
               setIdAttribute(e.value);
               setAttr(e.label);
-              console.log(e.value);
             }}
-            defaultValue={options.find((option) => option.label == data.name)}
+            defaultValue={options.find(
+              (option) => option.label == data.attribute
+            )}
+            required
             className="focus:ring-black focus:border-black mb-4"
           ></Select>
         </div>

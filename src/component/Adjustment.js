@@ -3,6 +3,7 @@ import { Alert } from "flowbite-react";
 import { AdjustmentContext } from "../context/AdjustmentContext";
 import { RiDashboardFill } from "react-icons/ri";
 import { StockContext } from "../context/StockContext";
+import { UserContext } from "../context/UserContext";
 
 import AdjustmentStockPopup from "./AdjustmentStockPopup";
 const Adjustment = () => {
@@ -15,6 +16,8 @@ const Adjustment = () => {
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState("");
   const [alertMsg, setAlertMsg] = useState("");
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
 
   const handleSubmit = (evt) => {
     evt.preventDefault();
@@ -27,6 +30,7 @@ const Adjustment = () => {
       body: JSON.stringify({
         idstock: selected.idstock,
         adjustment_qty: parseInt(-qtyAdjSum),
+        created_by: username,
       }),
     });
     response
@@ -59,6 +63,11 @@ const Adjustment = () => {
                   code: s.code,
                   product: s.product,
                   qty: qtyAdj,
+                  created_by: s.created_by,
+                  created_at: s.created_at,
+                  modified_at: s.modified_at,
+                  modified_by: s.modified_by,
+                  document_number: s.document_number,
                 };
               }
               return s;

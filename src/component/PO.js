@@ -6,6 +6,7 @@ import { POContext } from "../context/PoContext";
 import Select from "react-select";
 import { BiArrowBack } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/UserContext";
 
 import POStockPopup from "./POStockPopup";
 const PO = () => {
@@ -22,7 +23,8 @@ const PO = () => {
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState("");
   const [alertMsg, setAlertMsg] = useState("");
-
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
   const options_vendor = vendor
     ? vendor.map((c) => ({
         value: c.idvendor,
@@ -54,6 +56,7 @@ const PO = () => {
         quantity: qty,
         price,
         total,
+        created_by: username,
       }),
     });
     response

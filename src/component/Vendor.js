@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Alert } from "flowbite-react";
 import { VendorContext } from "../context/VendorContext";
+import { UserContext } from "../context/UserContext";
 const Vendor = () => {
   const [vendor_name, setVendorName] = useState();
   const [address, setAddress] = useState("");
@@ -12,7 +13,8 @@ const Vendor = () => {
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState("");
   const [alertMsg, setAlertMsg] = useState("");
-
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
   const handleSubmit = (evt) => {
     evt.preventDefault();
 
@@ -22,6 +24,7 @@ const Vendor = () => {
       contact_person,
       contact_number,
       email,
+      created_by: username,
     };
 
     const response = fetch("http://localhost:4000/api/vendor", {

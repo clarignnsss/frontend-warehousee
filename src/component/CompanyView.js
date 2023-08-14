@@ -112,7 +112,7 @@ const CompanyView = () => {
           setSelected(e.value);
         }}
         onDoubleClick={() => setOpen(!open)}
-      
+        // style={{ maxWidth: "1000px" }}
       >
         <Column
           field="document_number"

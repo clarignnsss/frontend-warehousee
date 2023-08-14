@@ -5,10 +5,13 @@ import Select from "react-select";
 import { RiDashboardFill } from "react-icons/ri";
 import { StockContext } from "../context/StockContext";
 import StockProductPopup from "./StockProductPopup";
+import { UserContext } from "../context/UserContext";
 const Stock = () => {
   const [idwarehouse, setIdWarehouse] = useState("");
   const { stock, setStock } = useContext(StockContext);
   const [qty, setQty] = useState("");
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
   const [selected, setSelected] = useState("");
   const [openPopup, setOpenPopup] = useState(false);
   const [alert, setAlert] = useState(false);
@@ -30,6 +33,7 @@ const Stock = () => {
       idwarehouse,
       idproductUnitConversion: selected.idproductUnitConversion,
       qty,
+      created_by: username,
     };
 
     const response = fetch("http://localhost:4000/api/stock", {

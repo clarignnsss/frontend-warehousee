@@ -182,7 +182,7 @@ const Sidebar = (props) => {
               <AdjustmentList />
               <BuyingProcessList />
               <TransferList />
-              <SalesProcessList />
+              {/* <SalesProcessList /> */}
             </ul>
           </nav>
         </div>

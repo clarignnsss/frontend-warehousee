@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import { AdjustmentContext } from "../context/AdjustmentContext";
 import { StockContext } from "../context/StockContext";
 import { Button } from "primereact/button";
-import Select from "react-select";
+import { UserContext } from "../context/UserContext";
 
 const AdjustmentPopup = ({
   data,
@@ -16,6 +16,16 @@ const AdjustmentPopup = ({
   const { adjustment, setAdjustment } = useContext(AdjustmentContext);
   const { stock, setStock } = useContext(StockContext);
   const [qtyAdj, setQtyAdj] = useState(data.adjustment_qty);
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
+  const current_date = new Date();
+  const year = current_date.getFullYear();
+  const month = (current_date.getMonth() + 1).toString().padStart(2, "0");
+  const day = current_date.getDate().toString().padStart(2, "0");
+  const hours = current_date.getHours().toString().padStart(2, "0");
+  const minutes = current_date.getMinutes().toString().padStart(2, "0");
+  const seconds = current_date.getSeconds().toString().padStart(2, "0");
+  const sqlDatetime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
   const popup = useRef();
 
@@ -53,6 +63,11 @@ const AdjustmentPopup = ({
             code: data.code,
             product: data.product,
             qty: res.qty,
+            created_at: s.created_at,
+            created_by: s.created_by,
+            modified_at: s.modified_at,
+            modified_by: s.modified_by,
+            document_number: s.document_number,
           };
         }
         return s;
@@ -81,6 +96,7 @@ const AdjustmentPopup = ({
         body: JSON.stringify({
           idstock: data.idstock,
           adjustment_qty: parseInt(qtyAdj),
+          modified_by: username,
         }),
       }
     );
@@ -97,6 +113,10 @@ const AdjustmentPopup = ({
             code: data.code,
             product: data.product,
             uom: data.uom,
+            modified_by: username,
+            created_at: data.created_at,
+            created_by: data.created_by,
+            modified_at: sqlDatetime,
           };
         }
         return u;

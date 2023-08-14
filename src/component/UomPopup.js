@@ -1,11 +1,22 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { UomContext } from "../context/UomContext";
 import { Button } from "primereact/button";
+import { UserContext } from "../context/UserContext";
 
 const UomPopup = ({ data, setOpen, open }) => {
   const [uomName, setUomName] = useState(data.name);
   const { uom, setUom } = useContext(UomContext);
   const popup = useRef();
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
+  const current_date = new Date();
+  const year = current_date.getFullYear();
+  const month = (current_date.getMonth() + 1).toString().padStart(2, "0");
+  const day = current_date.getDate().toString().padStart(2, "0");
+  const hours = current_date.getHours().toString().padStart(2, "0");
+  const minutes = current_date.getMinutes().toString().padStart(2, "0");
+  const seconds = current_date.getSeconds().toString().padStart(2, "0");
+  const sqlDatetime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
   const handleDelete = () => {
     const response = fetch(`http://localhost:4000/api/uom/${data.iduom}`, {
@@ -29,6 +40,7 @@ const UomPopup = ({ data, setOpen, open }) => {
         },
         body: JSON.stringify({
           uomName,
+          modified_by: username,
         }),
       }
     );
@@ -39,6 +51,11 @@ const UomPopup = ({ data, setOpen, open }) => {
           return {
             iduom: data.iduom,
             name: uomName,
+            document_number: data.document_number,
+            created_by: data.created_by,
+            created_at: data.created_at,
+            modified_at: sqlDatetime,
+            modified_by: username,
           }; // update matching customer object
         }
         return u; // keep other customer objects unchanged

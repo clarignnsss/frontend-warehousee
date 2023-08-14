@@ -5,7 +5,7 @@ import { Tag } from "primereact/tag";
 import Select from "react-select";
 import { VendorContext } from "../context/VendorContext";
 import { StockContext } from "../context/StockContext";
-
+import { UserContext } from "../context/UserContext";
 const POPopup = ({
   data,
   setOpen,
@@ -30,6 +30,16 @@ const POPopup = ({
   const [vendor_name, setVendorName] = useState(data.vendor_name);
   const { vendor, setVendor } = useContext(VendorContext);
   const { stock, setStock } = useContext(StockContext);
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
+  const current_date = new Date();
+  const year = current_date.getFullYear();
+  const month = (current_date.getMonth() + 1).toString().padStart(2, "0");
+  const day = current_date.getDate().toString().padStart(2, "0");
+  const hours = current_date.getHours().toString().padStart(2, "0");
+  const minutes = current_date.getMinutes().toString().padStart(2, "0");
+  const seconds = current_date.getSeconds().toString().padStart(2, "0");
+  const sqlDatetime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
   const getSeverity = (po) => {
     switch (po.status) {
@@ -58,6 +68,12 @@ const POPopup = ({
       `http://localhost:4000/api/po/status/${data.idpurchase_order}`,
       {
         method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          modified_by: username,
+        }),
       }
     );
     const res = await response.json();
@@ -77,6 +93,11 @@ const POPopup = ({
             quantity,
             price,
             total,
+            modified_at: data.modified_at,
+            modified_by: data.modified_by,
+            created_at: data.created_at,
+            created_by: data.created_by,
+            document_number: data.document_number,
           };
         }
         return u;
@@ -84,15 +105,12 @@ const POPopup = ({
       const newStock = stock.map((s) => {
         if (s.idstock == data.idstock) {
           return {
-            idstock: data.idstock,
-            idwarehouse: data.idwarehouse,
-            warehouse_name: data.warehouse_name,
-            idproductUnitConversion: data.idproductUnitConversion,
-            iduom: data.iduom,
-            uom: data.uom,
-            idproduct: data.idproduct,
-            code: data.code,
-            product: data.product,
+            ...data,
+            document_number: s.document_number,
+            created_at: s.created_at,
+            created_by: s.created_by,
+            modified_at: s.modified_at,
+            modified_by: s.modified_by,
             qty: res.qty,
           };
         }
@@ -166,6 +184,7 @@ const POPopup = ({
           quantity,
           price,
           total,
+          modified_by: username,
         }),
       }
     );
@@ -187,6 +206,11 @@ const POPopup = ({
             quantity,
             price,
             total,
+            modified_at: sqlDatetime,
+            modified_by: username,
+            created_at: data.created_at,
+            created_by: data.created_by,
+            document_number: data.document_number,
           };
         }
         return u;

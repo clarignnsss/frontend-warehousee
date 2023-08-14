@@ -114,7 +114,7 @@ const AdjustmentView = () => {
         }}
         onDoubleClick={() => setOpen(!open)}
       >
-        <Column field="idadjustment" header="ID" sortable></Column>
+        <Column field="document_number" header="ID" sortable></Column>
         <Column field="warehouse_name" header="Warehouse" sortable></Column>
         <Column field="product" header="Product" sortable></Column>
         <Column field="code" header="Code" sortable></Column>
@@ -124,6 +124,10 @@ const AdjustmentView = () => {
           header="Qty Adjustment"
           sortable
         ></Column>
+        <Column field="created_at" header="Created At" sortable></Column>
+        <Column field="created_by" header="Created By" sortable></Column>
+        <Column field="modified_at" header="Modified At" sortable></Column>
+        <Column field="modified_by" header="Modified By" sortable></Column>
         <Column field="idstock" header="idstock" sortable hidden></Column>
         <Column field="idwarehouse" header="idstock" sortable hidden></Column>
         <Column

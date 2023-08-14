@@ -4,6 +4,7 @@ import { AttrValueContext } from "../context/AttrValueContext";
 import { Alert } from "flowbite-react";
 import Select from "react-select";
 import { AttributeContext } from "../context/AttributeContext";
+import { UserContext } from "../context/UserContext";
 
 const AttrValue = () => {
   const { title, setTitle } = useContext(TitleContext);
@@ -15,6 +16,8 @@ const AttrValue = () => {
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState(false);
   const [alertMsg, setAlertMsg] = useState(false);
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
 
   const options = attribute
     ? attribute.map((c) => ({
@@ -41,6 +44,7 @@ const AttrValue = () => {
       idattribute,
       name: Name,
       value,
+      created_by: username,
     };
     const response = fetch("http://localhost:4000/api/attributevalue", {
       method: "POST",

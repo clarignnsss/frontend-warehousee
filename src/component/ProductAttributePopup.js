@@ -5,17 +5,27 @@ import { Button } from "primereact/button";
 import { ProductAttributeContext } from "../context/ProductAttributeContext";
 import { AttrValueContext } from "../context/AttrValueContext";
 import { ProductContext } from "../context/ProductContext";
+import { UserContext } from "../context/UserContext";
 
 const ProductAttributePopup = ({ data, setOpen, open }) => {
   const { productattr, setProductattr } = useContext(ProductAttributeContext);
-
-  const [IdProduct, setIdProduct] = useState();
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
+  const [IdProduct, setIdProduct] = useState(data.idproduct);
   const { attrvalue } = useContext(AttrValueContext);
   const { product } = useContext(ProductContext);
   const [idattrValue, setIdAttrValue] = useState(data.idattrvalue);
   const [attrValue, setAttrValue] = useState(data.name);
   const [code, setCode] = useState();
-  const [Name, setName] = useState(data.name);
+  const [Name, setName] = useState(data.product);
+  const current_date = new Date();
+  const year = current_date.getFullYear();
+  const month = (current_date.getMonth() + 1).toString().padStart(2, "0");
+  const day = current_date.getDate().toString().padStart(2, "0");
+  const hours = current_date.getHours().toString().padStart(2, "0");
+  const minutes = current_date.getMinutes().toString().padStart(2, "0");
+  const seconds = current_date.getSeconds().toString().padStart(2, "0");
+  const sqlDatetime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
   const popup = useRef();
 
@@ -61,6 +71,7 @@ const ProductAttributePopup = ({ data, setOpen, open }) => {
         body: JSON.stringify({
           idproduct: IdProduct,
           idattrvalue: idattrValue,
+          modified_by: username,
         }),
       }
     );
@@ -74,6 +85,12 @@ const ProductAttributePopup = ({ data, setOpen, open }) => {
             product: Name,
             attributeValue: attrValue,
             idattrvalue: idattrValue,
+            document_number: data.document_number,
+            created_at: data.created_at,
+            created_by: data.created_by,
+            modified_by: username,
+            modified_at: sqlDatetime,
+            code: data.code,
           }; // update matching customer object
         }
         return u; // keep other customer objects unchanged
@@ -131,7 +148,7 @@ const ProductAttributePopup = ({ data, setOpen, open }) => {
               setName(e.label);
             }}
             defaultValue={options_product.find(
-              (option) => option.idproduct == data.idproduct
+              (option) => option.value == data.idproduct
             )}
             required
             className="focus:ring-black focus:border-black"

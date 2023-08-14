@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { TitleContext } from "../context/TitleContext";
 import { UomContext } from "../context/UomContext";
 import { Alert } from "flowbite-react";
+import { UserContext } from "../context/UserContext";
 
 const Uom = () => {
   const { title, setTitle } = useContext(TitleContext);
@@ -10,6 +11,8 @@ const Uom = () => {
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState(false);
   const [alertMsg, setAlertMsg] = useState(false);
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
 
   useEffect(() => {
     setTitle("Product");
@@ -18,6 +21,7 @@ const Uom = () => {
     evt.preventDefault();
     const newUom = {
       uomName,
+      created_by: username,
     };
     const response = fetch("http://localhost:4000/api/uom", {
       method: "POST",

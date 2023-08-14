@@ -4,6 +4,7 @@ import { WarehouseContext } from "../context/WarehouseContext";
 import { Alert } from "flowbite-react";
 import { BiArrowBack } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/UserContext";
 
 const Warehouse = () => {
   const { title, setTitle } = useContext(TitleContext);
@@ -13,7 +14,8 @@ const Warehouse = () => {
   const [contact_person, setCP] = useState();
   const [contact_number, setCN] = useState();
   const [status, setStatus] = useState();
-
+  const { userInfo } = useContext(UserContext);
+  const username = userInfo?.username;
   const [alert, setAlert] = useState(false);
   const [alertColor, setAlertColor] = useState(false);
   const [alertMsg, setAlertMsg] = useState(false);
@@ -35,6 +37,7 @@ const Warehouse = () => {
       contact_person,
       contact_number,
       status,
+      created_by: username,
     };
     const response = fetch("http://localhost:4000/api/warehouse", {
       method: "POST",
